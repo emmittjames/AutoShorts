@@ -29,6 +29,7 @@ def getContent(outputDir, postOptionCount) -> VideoScript:
         posts.append(submission)
         if (autoSelect or len(posts) >= postOptionCount):
             break
+    
 
     if (autoSelect):
         return __getContentFromPost(posts[0])

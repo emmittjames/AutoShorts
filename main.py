@@ -4,23 +4,34 @@ from os import listdir
 from os.path import isfile, join
 
 def createVideo():
+
     config = configparser.ConfigParser()
     config.read('config.ini')
     outputDir = config["General"]["OutputDirectory"]
 
     startTime = time.time()
 
+    print("aaa")
+
     # Get script from reddit
     # If a post id is listed, use that. Otherwise query top posts
     if (len(sys.argv) == 2):
+        print("bbb")
         script = reddit.getContentFromId(outputDir, sys.argv[1])
     else:
+        print("abab")
         postOptionCount = int(config["Reddit"]["NumberOfPostsToSelectFrom"])
         script = reddit.getContent(outputDir, postOptionCount)
+    print("bbbbbaaaaa")
+    
     fileName = script.getFileName()
+
+    print("ccc")
 
     # Create screenshots
     screenshot.getPostScreenshots(fileName, script)
+
+    print("ddd")
 
     # Setup background clip
     bgDir = config["General"]["BackgroundDirectory"]

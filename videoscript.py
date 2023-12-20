@@ -20,6 +20,7 @@ class VideoScript:
         self.url = url
         self.title = title
         self.titleAudioClip = self.__createVoiceOver("title", title)
+        print("done")
 
     def canBeFinished(self) -> bool:
         return (len(self.frames) > 0) and (self.totalDuration > MIN_DURATION)
@@ -45,6 +46,7 @@ class VideoScript:
 
     def __createVoiceOver(self, name, text):
         file_path = voiceover.create_voice_over(f"{self.fileName}-{name}", text)
+        print(f"Created voice over: {file_path}")
         audioClip = AudioFileClip(file_path)
         if (self.totalDuration + audioClip.duration > MAX_DURATION):
             return None
