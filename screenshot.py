@@ -8,17 +8,27 @@ screenshotDir = "Screenshots"
 screenWidth = 400
 screenHeight = 800
 
-def getPostScreenshots(filePrefix, script):
+def getPostScreenshots(filePrefix, script, postId):
     print("Taking screenshots...")
     driver, wait = __setupDriver(script.url)
-    script.titleSCFile = __takeScreenshot(filePrefix, driver, wait)
+    print("Driver setup complete")
+    script.titleSCFile = __takeScreenshot(filePrefix, driver, wait, handle="Post", postId=postId)
     for commentFrame in script.frames:
         commentFrame.screenShotFile = __takeScreenshot(filePrefix, driver, wait, f"t1_{commentFrame.commentId}")
     driver.quit()
 
-def __takeScreenshot(filePrefix, driver, wait, handle="Post"):
+def __takeScreenshot(filePrefix, driver, wait, handle="Post", postId=""):
     method = By.CLASS_NAME if (handle == "Post") else By.ID
-    search = wait.until(EC.presence_of_element_located((method, handle)))
+    content = driver.find_element(By.ID, "main-content")
+    print("take screenshot")
+    if(handle == "Post"):
+        print("handle = post")
+        search = wait.until(EC.presence_of_element_located((By.ID, 't3_' + postId)))
+    else:
+        print("else")
+        handle = handle + '-comment-rtjson-content'
+        print("handle = " + handle)
+        search = wait.until(EC.presence_of_element_located((method, handle)))
     driver.execute_script("window.focus();")
 
     fileName = f"{screenshotDir}/{filePrefix}-{handle}.png"

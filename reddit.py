@@ -36,7 +36,7 @@ def getContent(outputDir, postOptionCount) -> VideoScript:
     else:
         postSelection = int(input("Input: "))
         selectedPost = posts[postSelection]
-        return __getContentFromPost(selectedPost)
+        return __getContentFromPost(selectedPost), selectedPost.id
 
 def getContentFromId(outputDir, submissionId) -> VideoScript:
     reddit = __getReddit()
@@ -64,6 +64,7 @@ def __getContentFromPost(submission) -> VideoScript:
     content = VideoScript(submission.url, submission.title, submission.id)
     print(f"Creating video for post: {submission.title}")
     print(f"Url: {submission.url}")
+    print(f"Id: {submission.id}")
 
     failedAttempts = 0
     for comment in submission.comments:

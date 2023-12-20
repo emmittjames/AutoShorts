@@ -21,15 +21,15 @@ def createVideo():
     else:
         print("abab")
         postOptionCount = int(config["Reddit"]["NumberOfPostsToSelectFrom"])
-        script = reddit.getContent(outputDir, postOptionCount)
+        script, postId = reddit.getContent(outputDir, postOptionCount)
     print("bbbbbaaaaa")
-    
+
     fileName = script.getFileName()
 
     print("ccc")
 
     # Create screenshots
-    screenshot.getPostScreenshots(fileName, script)
+    screenshot.getPostScreenshots(fileName, script, postId)
 
     print("ddd")
 
