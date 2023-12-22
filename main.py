@@ -33,19 +33,37 @@ def createVideo():
     bgCount = len(bgFiles)
     print(f"Found {bgCount} background files")
     bgIndex = random.randint(0, bgCount-1)
+
+    """
     backgroundVideo = VideoFileClip(
         # filename=f"{bgDir}/{bgPrefix}{bgIndex}.mp4", 
         filename=join(bgDir, bgFiles[bgIndex]),
-        audio=False).subclip(0, script.getDuration())
+        audio=False).subclip(background_video_start_time, script.getDuration())
+    """
+
+    backgroundVideo = VideoFileClip(
+        filename=join(bgDir, bgFiles[bgIndex]),
+        audio=False)
+    
+    background_video_start_time = random.randint(0, math.floor(backgroundVideo.duration - script.getDuration()) - 30)
+    
+    backgroundVideo = backgroundVideo.subclip(background_video_start_time, background_video_start_time + script.getDuration())
+
     w, h = backgroundVideo.size
 
+    # Set the desired aspect ratio (9:16)
+    desired_aspect_ratio = 9 / 16
+
+    # Calculate the width based on the background's height
+    bg_height = backgroundVideo.size[1]
+    desired_width = int(bg_height * desired_aspect_ratio)
 
     def __createClip(screenShotFile, audioClip, marginSize):
         imageClip = ImageClip(
             screenShotFile,
             duration=audioClip.duration
             ).set_position(("center", "center"))
-        imageClip = imageClip.resize(width=(w-marginSize))
+        imageClip = imageClip.resize(width=desired_width - marginSize)
         videoClip = imageClip.set_audio(audioClip)
         videoClip.fps = 1
         return videoClip
@@ -64,9 +82,9 @@ def createVideo():
 
     # Compose background/foreground
     final = CompositeVideoClip(
-        clips=[backgroundVideo, contentOverlay], 
-        size=backgroundVideo.size).set_audio(contentOverlay.audio)
-        # size=(desired_width, h)).set_audio(contentOverlay.audio)
+        clips=[backgroundVideo.set_position(("center", "center")), contentOverlay],
+        # size=backgroundVideo.size).set_audio(contentOverlay.audio)
+        size=(desired_width, bg_height)).set_audio(contentOverlay.audio)
     final.duration = script.getDuration()
     final.set_fps(backgroundVideo.fps)
 
