@@ -25,7 +25,6 @@ def __takeScreenshot(filePrefix, driver, wait, handle="Post", postId=""):
         print("handle = post")
         search = wait.until(EC.presence_of_element_located((By.ID, 't3_' + postId)))
     else:
-        print("else")
         handle = handle + '-comment-rtjson-content'
         print("handle = " + handle)
         search = wait.until(EC.presence_of_element_located((method, handle)))
