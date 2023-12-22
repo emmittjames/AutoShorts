@@ -10,3 +10,4 @@ pyvenv.cfg
 client_secrets.json
 geckodriver.log
 config.ini
+.DS_Store

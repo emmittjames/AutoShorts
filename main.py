@@ -11,38 +11,34 @@ def createVideo():
 
     startTime = time.time()
 
-    print("aaa")
-
     # Get script from reddit
     # If a post id is listed, use that. Otherwise query top posts
     if (len(sys.argv) == 2):
-        print("bbb")
         script = reddit.getContentFromId(outputDir, sys.argv[1])
     else:
-        print("abab")
         postOptionCount = int(config["Reddit"]["NumberOfPostsToSelectFrom"])
         script, postId = reddit.getContent(outputDir, postOptionCount)
-    print("bbbbbaaaaa")
 
     fileName = script.getFileName()
 
-    print("ccc")
 
     # Create screenshots
     screenshot.getPostScreenshots(fileName, script, postId)
 
-    print("ddd")
 
     # Setup background clip
     bgDir = config["General"]["BackgroundDirectory"]
     bgPrefix = config["General"]["BackgroundFilePrefix"]
     bgFiles = [f for f in listdir(bgDir) if isfile(join(bgDir, f))]
     bgCount = len(bgFiles)
+    print(f"Found {bgCount} background files")
     bgIndex = random.randint(0, bgCount-1)
     backgroundVideo = VideoFileClip(
-        filename=f"{bgDir}/{bgPrefix}{bgIndex}.mp4", 
+        # filename=f"{bgDir}/{bgPrefix}{bgIndex}.mp4", 
+        filename=join(bgDir, bgFiles[bgIndex]),
         audio=False).subclip(0, script.getDuration())
     w, h = backgroundVideo.size
+
 
     def __createClip(screenShotFile, audioClip, marginSize):
         imageClip = ImageClip(
@@ -65,10 +61,12 @@ def createVideo():
     # Merge clips into single track
     contentOverlay = concatenate_videoclips(clips).set_position(("center", "center"))
 
+
     # Compose background/foreground
     final = CompositeVideoClip(
         clips=[backgroundVideo, contentOverlay], 
         size=backgroundVideo.size).set_audio(contentOverlay.audio)
+        # size=(desired_width, h)).set_audio(contentOverlay.audio)
     final.duration = script.getDuration()
     final.set_fps(backgroundVideo.fps)
 
@@ -85,12 +83,14 @@ def createVideo():
     )
     print(f"Video completed in {time.time() - startTime}")
 
+    """
     # Preview in VLC for approval before uploading
     if (config["General"].getboolean("PreviewBeforeUpload")):
         vlcPath = config["General"]["VLCPath"]
         p = subprocess.Popen([vlcPath, outputFile])
         print("Waiting for video review. Type anything to continue")
         wait = input()
+    """
 
     print("Video is ready to upload!")
     print(f"Title: {script.title}  File: {outputFile}")
