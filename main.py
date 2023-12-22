@@ -29,7 +29,8 @@ def createVideo():
     # Setup background clip
     bgDir = config["General"]["BackgroundDirectory"]
     bgPrefix = config["General"]["BackgroundFilePrefix"]
-    bgFiles = [f for f in listdir(bgDir) if isfile(join(bgDir, f))]
+    # bgFiles = [f for f in listdir(bgDir) if isfile(join(bgDir, f))]
+    bgFiles = [f for f in listdir(bgDir) if isfile(join(bgDir, f)) and f.lower().endswith('.mp4')]
     bgCount = len(bgFiles)
     print(f"Found {bgCount} background files")
     bgIndex = random.randint(0, bgCount-1)
