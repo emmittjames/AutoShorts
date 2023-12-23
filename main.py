@@ -1,5 +1,5 @@
 from moviepy.editor import *
-import reddit, screenshot, time, subprocess, random, configparser, sys, math
+import reddit, screenshot, time, subprocess, random, configparser, sys, math, pyperclip
 from os import listdir
 from os.path import isfile, join
 
@@ -89,6 +89,8 @@ def createVideo():
     final.duration = script.getDuration()
     final.set_fps(backgroundVideo.fps)
 
+    final = final.fx(vfx.speedx, 1.15)
+
     # Write output to file
     print("Rendering final video...")
     bitrate = config["Video"]["Bitrate"]
@@ -114,6 +116,7 @@ def createVideo():
 
     print("Video is ready to upload!")
     print(f"Title: {script.title}  File: {outputFile}")
+    pyperclip.copy(script.title + " #askreddit #redditstories #reddit")
     endTime = time.time()
     print(f"Total time: {endTime - startTime}")
 
