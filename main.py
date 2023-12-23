@@ -93,6 +93,7 @@ def createVideo():
     print("Rendering final video...")
     bitrate = config["Video"]["Bitrate"]
     threads = config["Video"]["Threads"]
+    fileName = script.title
     outputFile = f"{outputDir}/{fileName}.mp4"
     final.write_videofile(
         outputFile, 
