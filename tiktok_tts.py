@@ -164,66 +164,31 @@ def batch_create(filename: str = 'voice.mp3'):
 
     out.close()
 
-def main():
-    parser = argparse.ArgumentParser(description = "Simple Python script to interact with the TikTok TTS API")
-    parser.add_argument("-v", "--voice", help = "the code of the desired voice")
-    parser.add_argument("-t", "--text", help = "the text to be read")
-    parser.add_argument("-s", "--session", help = "account session id")
-    parser.add_argument("-f", "--file", help = "use this if you wanna use 'text.txt'")
-    parser.add_argument("-n", "--name", help = "The name for the output file (.mp3)")
-    parser.add_argument("-p", "--play", action='store_true', help = "use this if you want to play your output")
-    args = parser.parse_args()
+def main(text_speaker, req_text, session_id, filename='voice.mp3', play=False):
+    text_speaker = text_speaker or 'en_us_002'  # Default voice if not provided
+    play = bool(play)
 
-    text_speaker = args.voice
+    if not session_id:
+        print('FATAL: You need to have a TikTok session ID!')
+        exit(1)
 
-    if args.file is not None:
-        req_text = open(args.file, 'r', errors='ignore', encoding='utf-8').read()
-    else:
-        if args.text == None:
-            req_text = 'TikTok Text To Speech'
-            print('You need to have one form of text! (See README.md)')
-        else:
-            req_text = args.text
-
-    if args.play is not None:
-        play = args.play
-
-    if args.voice == None:
-        text_speaker = 'en_us_002'
-        print('You need to have a voice! (See README.md)')
+    if not req_text:
+        print('You need to have one form of text!')
+        return
 
     if text_speaker == "random":
         text_speaker = randomvoice()
 
-    if args.name is not None:
-        filename = args.name
+    if filename == 'voice.mp3' and play:
+        print("Warning: Playing the output without specifying a filename may result in unexpected behavior.")
+
+    if filename.endswith('.mp3'):
+        filename = filename
     else:
-        filename = 'voice.mp3'
+        filename += '.mp3'
 
-    if args.session is None:
-        print('FATAL: You need to have a TikTok session ID!')
-        exit(1)
-
-    if args.file is not None:
-        chunk_size = 200
-        textlist = textwrap.wrap(req_text, width=chunk_size, break_long_words=True, break_on_hyphens=False)
-
-        os.makedirs('./batch/')
-
-        for i, item in enumerate(textlist):
-            tts_batch(args.session, text_speaker, item, f'./batch/{i}.mp3')
-        
-        batch_create(filename)
-
-        for item in os.listdir('./batch/'):
-            os.remove('./batch/' + item)
-        
-        os.removedirs('./batch/')
-
-        return
-
-    tts(args.session, text_speaker, req_text, filename, play)
-
+    if req_text:
+        tts(session_id, text_speaker, req_text, filename, play)
 
 def randomvoice():
     count = random.randint(0, len(voices))
@@ -238,6 +203,3 @@ def sampler():
         print(item)
         req_text = 'TikTok Text To Speech Sample'
         tts(text_speaker, req_text, filename)
-
-if __name__ == "__main__":
-    main()

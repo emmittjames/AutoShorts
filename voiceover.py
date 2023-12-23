@@ -11,7 +11,7 @@ def create_voice_over(fileName, text):
     return filePath
 """
 
-
+"""
 from gtts import gTTS
 
 voiceoverDir = "Voiceovers"
@@ -21,21 +21,19 @@ def create_voice_over(fileName, text):
     tts = gTTS(text=text, lang='en')
     tts.save(filePath)
     return filePath
-
-
 """
-from tiktok_tts import main as tts
+
+import tiktok_tts, random
 
 voiceoverDir = "Voiceovers"
 
+voices = [
+    'en_us_006', 'en_us_007', 'en_us_009'
+]
+
 def create_voice_over(fileName, text):
-    # Set your TikTok session ID and other parameters
-    session_id = "57b7d8b3e04228a24cc1e6d25387603a"
-    voice_code = "en_us_002"
+    session_id = "00453c9bbd7ea65b290bfa2656f7bd08"
+    random_voice = random.choice(voices)
     filePath = f"{voiceoverDir}/{fileName}.mp3"
-
-    # Call the main function with the specified parameters
-    tts(["-v", voice_code, "-f", "testtext.txt", "-s", session_id, "-n", filePath])
-
-create_voice_over("test", "This is a test")
-"""
+    tiktok_tts.main(random_voice, text, session_id, filePath, False)
+    return filePath
