@@ -28,7 +28,7 @@ import tiktok_tts, random
 voiceoverDir = "Voiceovers"
 
 voices = [
-    'en_us_006', 'en_us_007', 'en_us_009'
+    'en_us_001', 'en_us_006', 'en_us_007', 'en_us_009'
 ]
 
 def create_voice_over(fileName, text):
