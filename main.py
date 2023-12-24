@@ -1,5 +1,5 @@
 from moviepy.editor import *
-import reddit, screenshot, time, subprocess, random, configparser, sys, math
+import reddit, screenshot, time, subprocess, random, configparser, sys, math, pyperclip
 from os import listdir
 from os.path import isfile, join
 
@@ -109,6 +109,7 @@ def createVideo():
 
     print("Video is ready to upload!")
     print(f"Title: {script.title}  File: {outputFile}")
+    pyperclip.copy(outputFile)
     endTime = time.time()
     print(f"Total time: {endTime - startTime}")
 
