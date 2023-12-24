@@ -35,13 +35,6 @@ def createVideo():
     print(f"Found {bgCount} background files")
     bgIndex = random.randint(0, bgCount-1)
 
-    """
-    backgroundVideo = VideoFileClip(
-        # filename=f"{bgDir}/{bgPrefix}{bgIndex}.mp4", 
-        filename=join(bgDir, bgFiles[bgIndex]),
-        audio=False).subclip(background_video_start_time, script.getDuration())
-    """
-
     backgroundVideo = VideoFileClip(
         filename=join(bgDir, bgFiles[bgIndex]),
         audio=False)
@@ -89,7 +82,7 @@ def createVideo():
     final.duration = script.getDuration()
     final.set_fps(backgroundVideo.fps)
 
-    # final = final.fx(vfx.speedx, 1.15) # Speed up video
+    final = final.fx(vfx.speedx, 1.05) # Speed up video
 
     # Write output to file
     print("Rendering final video...")

@@ -2,6 +2,7 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+import time
 
 # Config
 screenshotDir = "Screenshots"
@@ -44,7 +45,7 @@ def __setupDriver(url: str):
     wait = WebDriverWait(driver, 10)
 
     # driver.set_window_size(width=screenWidth, height=screenHeight)
-    driver.set_window_size(1000,1600)
+    driver.set_window_size(20,800)
 
     driver.get(url)
 

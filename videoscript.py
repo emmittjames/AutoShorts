@@ -3,9 +3,10 @@ from moviepy.editor import AudioFileClip
 import voiceover
 
 MAX_WORDS_PER_COMMENT = 100
+MAX_CHARS_PER_COMMENT = 200
 MIN_COMMENTS_FOR_FINISH = 4
-MIN_DURATION = 20
-MAX_DURATION = 58
+MIN_DURATION = 25
+MAX_DURATION = 59
 
 class VideoScript:
     title = ""
@@ -30,7 +31,7 @@ class VideoScript:
 
     def addCommentScene(self, text, commentId) -> None:
         wordCount = len(text.split())
-        if (wordCount > MAX_WORDS_PER_COMMENT):
+        if (wordCount > MAX_WORDS_PER_COMMENT or len(text) > MAX_CHARS_PER_COMMENT):
             return True
         frame = ScreenshotScene(text, commentId)
         frame.audioClip = self.__createVoiceOver(commentId, text)
