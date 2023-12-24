@@ -109,7 +109,7 @@ def createVideo():
 
     print("Video is ready to upload!")
     print(f"Title: {script.title}  File: {outputFile}")
-    pyperclip.copy(outputFile)
+    pyperclip.copy(fileName)
     endTime = time.time()
     print(f"Total time: {endTime - startTime}")
 

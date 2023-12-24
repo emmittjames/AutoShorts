@@ -70,7 +70,7 @@ def __getContentFromPost(submission) -> VideoScript:
     for comment in submission.comments:
         if(content.addCommentScene(markdown_to_text.markdown_to_text(comment.body), comment.id)):
             failedAttempts += 1
-        if (content.canQuickFinish() or (failedAttempts > 2 and content.canBeFinished())):
+        if (content.canQuickFinish() or (failedAttempts > 4 and content.canBeFinished())):
             break
     return content
 
