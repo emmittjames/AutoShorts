@@ -68,7 +68,9 @@ def __getContentFromPost(submission) -> VideoScript:
 
     failedAttempts = 0
     for comment in submission.comments:
-        if(content.addCommentScene(markdown_to_text.markdown_to_text(comment.body), comment.id)):
+        if (comment.author == None or comment.author == '[deleted]' or comment.author == 'AutoModerator'):
+            continue
+        elif(content.addCommentScene(markdown_to_text.markdown_to_text(comment.body), comment.id)):
             failedAttempts += 1
         if (content.canQuickFinish() or (failedAttempts > 4 and content.canBeFinished())):
             break
@@ -76,7 +78,5 @@ def __getContentFromPost(submission) -> VideoScript:
 
 def __getExistingPostIds(outputDir):
     files = os.listdir(outputDir)
-    # I'm sure anyone knowledgeable on python hates this. I had some weird 
-    # issues and frankly didn't care to troubleshoot. It works though...
     files = [f for f in files if os.path.isfile(outputDir+'/'+f)]
     return [re.sub(r'.*?-', '', file) for file in files]
