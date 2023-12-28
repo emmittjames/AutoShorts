@@ -2,11 +2,10 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-import time
 
 # Config
 screenshotDir = "Screenshots"
-screenWidth = 400
+screenWidth = 770
 screenHeight = 800
 
 def getPostScreenshots(filePrefix, script, postId):
@@ -19,16 +18,29 @@ def getPostScreenshots(filePrefix, script, postId):
     driver.quit()
 
 def __takeScreenshot(filePrefix, driver, wait, handle="Post", postId=""):
-    method = By.CLASS_NAME if (handle == "Post") else By.ID
-    content = driver.find_element(By.ID, "main-content")
-    print("take screenshot")
+    try:
+        # iframe = driver.find_element(By.TAG_NAME, "iframe")
+        iframe = wait.until(EC.presence_of_element_located((By.TAG_NAME, "iframe")))
+        driver.switch_to.frame(iframe)
+        driver.find_element(By.CSS_SELECTOR, f"[aria-label='Close']").click()
+    except:
+        print("No iframe found")
+
+    driver.switch_to.default_content()
+        
     if(handle == "Post"):
-        print("handle = post")
-        search = wait.until(EC.presence_of_element_located((By.ID, 't3_' + postId)))
+        # search = wait.until(EC.presence_of_element_located((By.ID, 't3_' + postId)))
+        search = driver.find_element(By.ID, 't3_' + postId)
     else:
-        handle = handle + '-comment-rtjson-content'
-        print("handle = " + handle)
-        search = wait.until(EC.presence_of_element_located((method, handle)))
+        print("handle: " + handle)
+        search = driver.find_element(By.CSS_SELECTOR, f"[thingid='{handle}']")
+        try:
+            shadow_root_script = "return arguments[0].shadowRoot;"
+            comment_shadow_root = driver.execute_script(shadow_root_script, search)
+            comment_shadow_root.find_element(By.CSS_SELECTOR, f"[aria-label='Toggle Comment Thread']").click()
+        except:
+            print("No comment collapser found")
+            
     driver.execute_script("window.focus();")
 
     fileName = f"{screenshotDir}/{filePrefix}-{handle}.png"
@@ -38,14 +50,13 @@ def __takeScreenshot(filePrefix, driver, wait, handle="Post", postId=""):
     return fileName
 
 def __setupDriver(url: str):
-    options = webdriver.ChromeOptions()
+    options = webdriver.FirefoxOptions()
     options.headless = False
     options.enable_mobile = False
-    driver = webdriver.Chrome(options=options)
+    driver = webdriver.Firefox(options=options)
     wait = WebDriverWait(driver, 10)
 
-    # driver.set_window_size(width=screenWidth, height=screenHeight)
-    driver.set_window_size(20,800)
+    driver.set_window_size(width=screenWidth, height=screenHeight)
 
     driver.get(url)
 
