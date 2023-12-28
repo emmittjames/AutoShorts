@@ -54,15 +54,23 @@ comment = shadow_root.find_element(By.CSS_SELECTOR, comment_selector)
 
 # comment = shadow_root.find_element(By.CSS_SELECTOR, f"shreddit-comment[thingid='{thingid_value}']")
 
+"""
 collapse_buttons = driver.find_elements(By.ID, "comment-fold-button")
 
 for button in collapse_buttons:
     print("click")
     button.click()
+"""
 
-thing_id = "t1_kef1n05"
+# thing_id = "t1_kef1n05"
+thing_id = "t1_kefak5i"
 comment = driver.find_element(By.CSS_SELECTOR, f"[thingid='{thing_id}']")
-comment.find_element(By.ID, "comment-fold-button").click()
+
+shadow_root_script = "return arguments[0].shadowRoot;"
+comment_shadow_root = driver.execute_script(shadow_root_script, comment)
+
+aria_label = "Toggle Comment Thread"
+comment_shadow_root.find_element(By.CSS_SELECTOR, f"[aria-label='{aria_label}']").click()
 
 # comments = shadow_root.find_elements(By.CSS_SELECTOR, "shreddit-comment")
 
