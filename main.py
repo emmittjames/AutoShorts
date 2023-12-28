@@ -11,16 +11,10 @@ def createVideo():
 
     startTime = time.time()
 
-    # Get script from reddit
-    # If a post id is listed, use that. Otherwise query top posts
-    if (len(sys.argv) == 2):
-        script = reddit.getContentFromId(outputDir, sys.argv[1])
-    else:
-        postOptionCount = int(config["Reddit"]["NumberOfPostsToSelectFrom"])
-        script, postId = reddit.getContent(outputDir, postOptionCount)
+    postOptionCount = int(config["Reddit"]["NumberOfPostsToSelectFrom"])
+    script, postId = reddit.getContent(outputDir, postOptionCount)
 
     fileName = script.getFileName()
-
 
     # Create screenshots
     screenshot.getPostScreenshots(fileName, script, postId)
@@ -109,7 +103,6 @@ def createVideo():
 
     print("Video is ready to upload!")
     print(f"Title: {script.title}  File: {outputFile}")
-    pyperclip.copy(fileName)
     endTime = time.time()
     print(f"Total time: {endTime - startTime}")
 
