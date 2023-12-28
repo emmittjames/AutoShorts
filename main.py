@@ -23,7 +23,6 @@ def createVideo():
     # Setup background clip
     bgDir = config["General"]["BackgroundDirectory"]
     bgPrefix = config["General"]["BackgroundFilePrefix"]
-    # bgFiles = [f for f in listdir(bgDir) if isfile(join(bgDir, f))]
     bgFiles = [f for f in listdir(bgDir) if isfile(join(bgDir, f)) and f.lower().endswith('.mp4')]
     bgCount = len(bgFiles)
     print(f"Found {bgCount} background files")
@@ -71,7 +70,6 @@ def createVideo():
     # Compose background/foreground
     final = CompositeVideoClip(
         clips=[backgroundVideo.set_position(("center", "center")), contentOverlay],
-        # size=backgroundVideo.size).set_audio(contentOverlay.audio)
         size=(desired_width, bg_height)).set_audio(contentOverlay.audio)
     final.duration = script.getDuration()
     final.set_fps(backgroundVideo.fps)

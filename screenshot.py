@@ -24,7 +24,8 @@ def __takeScreenshot(filePrefix, driver, wait, handle="Post", postId=""):
         driver.switch_to.frame(iframe)
         driver.find_element(By.CSS_SELECTOR, f"[aria-label='Close']").click()
     except:
-        print("No iframe found")
+        # print("No iframe found")
+        pass
 
     driver.switch_to.default_content()
         
@@ -32,14 +33,14 @@ def __takeScreenshot(filePrefix, driver, wait, handle="Post", postId=""):
         # search = wait.until(EC.presence_of_element_located((By.ID, 't3_' + postId)))
         search = driver.find_element(By.ID, 't3_' + postId)
     else:
-        print("handle: " + handle)
         search = driver.find_element(By.CSS_SELECTOR, f"[thingid='{handle}']")
         try:
             shadow_root_script = "return arguments[0].shadowRoot;"
             comment_shadow_root = driver.execute_script(shadow_root_script, search)
             comment_shadow_root.find_element(By.CSS_SELECTOR, f"[aria-label='Toggle Comment Thread']").click()
         except:
-            print("No comment collapser found")
+            # print("No comment collapser found")
+            pass
             
     driver.execute_script("window.focus();")
 
