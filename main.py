@@ -81,6 +81,7 @@ def createVideo():
     bitrate = config["Video"]["Bitrate"]
     threads = config["Video"]["Threads"]
     fileName = script.title + " #askreddit #redditstories #reddit"
+    fileName = fileName.replace("/", " or ")
     outputFile = f"{outputDir}/{fileName}.mp4"
     final.write_videofile(
         outputFile, 

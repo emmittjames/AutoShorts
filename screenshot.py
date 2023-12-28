@@ -2,6 +2,7 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+import time
 
 # Config
 screenshotDir = "Screenshots"
@@ -13,23 +14,25 @@ def getPostScreenshots(filePrefix, script, postId):
     driver, wait = __setupDriver(script.url)
     print("Driver setup complete")
     script.titleSCFile = __takeScreenshot(filePrefix, driver, wait, handle="Post", postId=postId)
+    time.sleep(1)
+    driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+    time.sleep(3)
     for commentFrame in script.frames:
         commentFrame.screenShotFile = __takeScreenshot(filePrefix, driver, wait, f"t1_{commentFrame.commentId}")
     driver.quit()
 
 def __takeScreenshot(filePrefix, driver, wait, handle="Post", postId=""):
-    try:
-        # iframe = driver.find_element(By.TAG_NAME, "iframe")
-        iframe = wait.until(EC.presence_of_element_located((By.TAG_NAME, "iframe")))
-        driver.switch_to.frame(iframe)
-        driver.find_element(By.CSS_SELECTOR, f"[aria-label='Close']").click()
-    except:
-        # print("No iframe found")
-        pass
-
-    driver.switch_to.default_content()
-        
     if(handle == "Post"):
+        try:
+            # iframe = driver.find_element(By.TAG_NAME, "iframe")
+            iframe = wait.until(EC.presence_of_element_located((By.TAG_NAME, "iframe")))
+            driver.switch_to.frame(iframe)
+            driver.find_element(By.CSS_SELECTOR, f"[aria-label='Close']").click()
+            print("closed iframe")
+        except:
+            print("No iframe found")
+        driver.switch_to.default_content()
+
         # search = wait.until(EC.presence_of_element_located((By.ID, 't3_' + postId)))
         search = driver.find_element(By.ID, 't3_' + postId)
     else:
