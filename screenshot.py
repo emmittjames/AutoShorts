@@ -22,15 +22,21 @@ def getPostScreenshots(filePrefix, script, postId):
     driver.quit()
 
 def __takeScreenshot(filePrefix, driver, wait, handle="Post", postId=""):
+    driver.execute_script("window.focus();")
     if(handle == "Post"):
-        try:
-            # iframe = driver.find_element(By.TAG_NAME, "iframe")
-            iframe = wait.until(EC.presence_of_element_located((By.TAG_NAME, "iframe")))
-            driver.switch_to.frame(iframe)
-            driver.find_element(By.CSS_SELECTOR, f"[aria-label='Close']").click()
-            print("closed iframe")
-        except:
-            print("No iframe found")
+        tries = 0
+        while tries < 3:
+            try:
+                # iframe = driver.find_element(By.TAG_NAME, "iframe")
+                iframe = wait.until(EC.presence_of_element_located((By.TAG_NAME, "iframe")))
+                driver.switch_to.frame(iframe)
+                driver.find_element(By.CSS_SELECTOR, f"[aria-label='Close']").click()
+                print("closed iframe")
+                tries += 999
+            except:
+                print("No iframe found | tries:", tries)
+                tries+=1
+                driver.execute_script("window.focus();")
         driver.switch_to.default_content()
 
         # search = wait.until(EC.presence_of_element_located((By.ID, 't3_' + postId)))
