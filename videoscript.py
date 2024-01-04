@@ -56,9 +56,9 @@ class VideoScript:
             file.write(text)
         
         special_voice = False
-        if text.len < 10:
+        if text.len < 10 and name != "title":
             special_voice = True
-            
+
         file_path = voiceover.create_voice_over(f"{self.fileName}-{name}", script_path, special_voice)
         print(f"Created voice over: {file_path}")
         audioClip = AudioFileClip(file_path)
