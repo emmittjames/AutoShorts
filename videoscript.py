@@ -54,8 +54,12 @@ class VideoScript:
         script_path = f"Scripts/{self.fileName}"
         with open(script_path, 'w') as file:
             file.write(text)
-    
-        file_path = voiceover.create_voice_over(f"{self.fileName}-{name}", script_path)
+        
+        special_voice = False
+        if text.len < 10:
+            special_voice = True
+            
+        file_path = voiceover.create_voice_over(f"{self.fileName}-{name}", script_path, special_voice)
         print(f"Created voice over: {file_path}")
         audioClip = AudioFileClip(file_path)
         if (self.totalDuration + audioClip.duration > MAX_DURATION):
