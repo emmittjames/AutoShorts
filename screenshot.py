@@ -22,7 +22,7 @@ def getPostScreenshots(filePrefix, script, postId):
     driver.quit()
 
 def __takeScreenshot(filePrefix, driver, wait, handle="Post", postId=""):
-    driver.execute_script("window.focus();")
+    driver.switch_to.window(driver.window_handles[0])
     if(handle == "Post"):
         tries = 0
         while tries < 3:
@@ -36,7 +36,7 @@ def __takeScreenshot(filePrefix, driver, wait, handle="Post", postId=""):
             except:
                 print("No iframe found | tries:", tries)
                 tries+=1
-                driver.execute_script("window.focus();")
+                driver.switch_to.window(driver.window_handles[0])
         driver.switch_to.default_content()
 
         # search = wait.until(EC.presence_of_element_located((By.ID, 't3_' + postId)))
@@ -51,7 +51,8 @@ def __takeScreenshot(filePrefix, driver, wait, handle="Post", postId=""):
             # print("No comment collapser found")
             pass
             
-    driver.execute_script("window.focus();")
+    # driver.execute_script("window.focus();")
+    # driver.switch_to.window(driver.window_handles[0])
 
     fileName = f"{screenshotDir}/{filePrefix}-{handle}.png"
     fp = open(fileName, "wb")
