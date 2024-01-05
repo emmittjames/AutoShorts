@@ -22,10 +22,10 @@ def getPostScreenshots(filePrefix, script, postId):
     driver.quit()
 
 def __takeScreenshot(filePrefix, driver, wait, handle="Post", postId=""):
-    driver.switch_to.window(driver.window_handles[0])
+    driver.execute_script("window.focus();")
     if(handle == "Post"):
         tries = 0
-        while tries < 3:
+        while tries < 4:
             try:
                 # iframe = driver.find_element(By.TAG_NAME, "iframe")
                 iframe = wait.until(EC.presence_of_element_located((By.TAG_NAME, "iframe")))
@@ -36,7 +36,9 @@ def __takeScreenshot(filePrefix, driver, wait, handle="Post", postId=""):
             except:
                 print("No iframe found | tries:", tries)
                 tries+=1
-                driver.switch_to.window(driver.window_handles[0])
+                driver.execute_script("window.focus();")
+                if tries == 3:
+                    time.sleep(1)
         driver.switch_to.default_content()
 
         # search = wait.until(EC.presence_of_element_located((By.ID, 't3_' + postId)))
@@ -62,7 +64,7 @@ def __takeScreenshot(filePrefix, driver, wait, handle="Post", postId=""):
 
 def __setupDriver(url: str):
     options = webdriver.FirefoxOptions()
-    options.headless = False
+    options.headless = True
     options.enable_mobile = False
     driver = webdriver.Firefox(options=options)
     wait = WebDriverWait(driver, 10)

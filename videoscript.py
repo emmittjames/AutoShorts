@@ -2,9 +2,9 @@ from datetime import datetime
 from moviepy.editor import AudioFileClip
 import voiceover, re
 
-MAX_WORDS_PER_COMMENT = 300
+MAX_WORDS_PER_COMMENT = 400
 MIN_COMMENTS_FOR_FINISH = 4
-MIN_DURATION = 30
+MIN_DURATION = 32
 MAX_DURATION = 59
 
 class VideoScript:

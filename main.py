@@ -74,7 +74,7 @@ def createVideo():
     final.duration = script.getDuration()
     final.set_fps(backgroundVideo.fps)
 
-    final = final.fx(vfx.speedx, 1.1) # Speed up video
+    final = final.fx(vfx.speedx, 1.15) # Speed up video
 
     # Write output to file
     print("Rendering final video...")
