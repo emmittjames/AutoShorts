@@ -2,7 +2,8 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-import time
+from PIL import Image
+import time, re
 
 # Config
 screenshotDir = "Screenshots"
@@ -21,7 +22,10 @@ def getPostScreenshots(filePrefix, script, postId, read_comments):
         for commentFrame in script.frames:
             commentFrame.screenShotFile = __takeScreenshot(filePrefix, driver, wait, f"t1_{commentFrame.commentId}")
     else:
-        script.titleSCFile = __takeStoryScreenshots(filePrefix, driver, wait, postId=postId)
+        script.titleSCFile = __takeStoryScreenshotsTitle(filePrefix, driver, wait, postId=postId)
+        for commentFrame in script.frames:
+            paragraphNum = int(re.search(r'\d+$', commentFrame.commentId).group())
+            commentFrame.screenShotFile = __takeStoryScreenshots(filePrefix, driver, wait, postId=postId, paragraphNum=paragraphNum)
     driver.quit()
 
 def __takeScreenshot(filePrefix, driver, wait, handle="Post", postId=""):
@@ -46,16 +50,46 @@ def __takeScreenshot(filePrefix, driver, wait, handle="Post", postId=""):
     fp.close()
     return fileName
 
-def __takeStoryScreenshots(filePrefix, driver, wait, postId=""):
+def __takeStoryScreenshotsTitle(filePrefix, driver, wait, postId):
     close_popup(driver, wait)
+    creditBar = driver.find_element(By.CSS_SELECTOR, f"[slot='credit-bar']")
+    fileName1 = f"{screenshotDir}/{filePrefix}-creditBar.png"
+    fp = open(fileName1, "wb")
+    fp.write(creditBar.screenshot_as_png)
+    fp.close()
 
-    credit_bar = driver.find_element(By.CSS_SELECTOR, f"[slot='credit-bar']")
-    post_title = driver.find_element(By.ID, f"post-title-{postId}")
+    postTitle = driver.find_element(By.ID, f"post-title-{postId}")
+    fileName2 = f"{screenshotDir}/{filePrefix}-postTitle.png"
+    fp = open(fileName2, "wb")
+    fp.write(postTitle.screenshot_as_png)
+    fp.close()
+
+    fileNameFinal = f"{screenshotDir}/{filePrefix}-combinedHeader.png"
+    combine_images_vertically(fileName1, fileName2, fileNameFinal)
+    
+    return fileNameFinal
+
+def __takeStoryScreenshots(filePrefix, driver, wait, postId, paragraphNum):
     post_body = search = driver.find_element(By.ID, f"{postId}-post-rtjson-content")
     paragraphs = post_body.find_elements(By.TAG_NAME, 'p')
 
-    for paragraph in paragraphs:
-        print
+    # for paragraph in paragraphs:
+    search = paragraphs[paragraphNum]
+    fileName = f"{screenshotDir}/{filePrefix}-p{paragraphNum}.png"
+    fp = open(fileName, "wb")
+    fp.write(search.screenshot_as_png)
+    fp.close()
+    return fileName
+
+def combine_images_vertically(image_path1, image_path2, output_path):
+    img1 = Image.open(image_path1)
+    img2 = Image.open(image_path2)
+    if img1.width != img2.width:
+        raise ValueError("Images must have the same width")
+    combined_image = Image.new('RGB', (img1.width, img1.height + img2.height))
+    combined_image.paste(img1, (0, 0))
+    combined_image.paste(img2, (0, img1.height))
+    combined_image.save(output_path)
 
 def close_popup(driver, wait):
     tries = 0
