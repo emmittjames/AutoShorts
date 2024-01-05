@@ -12,12 +12,12 @@ def createVideo():
     startTime = time.time()
 
     postOptionCount = int(config["Reddit"]["NumberOfPostsToSelectFrom"])
-    script, postId = reddit.getContent(outputDir, postOptionCount)
+    script, postId, read_comments = reddit.getContent(outputDir, postOptionCount)
 
     fileName = script.getFileName()
 
     # Create screenshots
-    screenshot.getPostScreenshots(fileName, script, postId)
+    screenshot.getPostScreenshots(fileName, script, postId, read_comments)
 
 
     # Setup background clip

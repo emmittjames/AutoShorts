@@ -11,15 +11,26 @@ config.read('config.ini')
 CLIENT_ID = config["Reddit"]["CLIENT_ID"]
 CLIENT_SECRET = config["Reddit"]["CLIENT_SECRET"]
 USER_AGENT = config["Reddit"]["USER_AGENT"]
-SUBREDDIT = config["Reddit"]["SUBREDDIT"]
+# SUBREDDIT = config["Reddit"]["SUBREDDIT"]
 
 def getContent(outputDir, postOptionCount) -> VideoScript:
     reddit = __getReddit()
     existingPostIds = __getExistingPostIds(outputDir)
 
     now = int(time.time())
-    autoSelect = postOptionCount == 0
     posts = []
+
+    read_comments = True
+    subreddit_mapping = {
+        0: "askreddit",
+        1: "amitheasshole",
+    }
+    for key, value in subreddit_mapping.items():
+        print(f"[{key}] {value}")
+    SUBREDDIT = subreddit_mapping[int(input("Input: "))]
+
+    if(SUBREDDIT == "amitheasshole"):
+        read_comments = False
 
     for submission in reddit.subreddit(SUBREDDIT).top(time_filter="day", limit=postOptionCount*3):
         if (f"{submission.id}.mp4" in existingPostIds or submission.over_18):
@@ -27,30 +38,12 @@ def getContent(outputDir, postOptionCount) -> VideoScript:
         hoursAgoPosted = (now - submission.created_utc) / 3600
         print(f"[{len(posts)}] {submission.title}     {submission.score}    {'{:.1f}'.format(hoursAgoPosted)} hours ago")
         posts.append(submission)
-        if (autoSelect or len(posts) >= postOptionCount):
+        if (len(posts) >= postOptionCount):
             break
-    
 
-    if (autoSelect):
-        return __getContentFromPost(posts[0])
-    else:
-        postSelection = int(input("Input: "))
-        selectedPost = posts[postSelection]
-        return __getContentFromPost(selectedPost), selectedPost.id
-
-def getContentFromId(outputDir, submissionId) -> VideoScript:
-    reddit = __getReddit()
-    existingPostIds = __getExistingPostIds(outputDir)
-    
-    if (submissionId in existingPostIds):
-        print("Video already exists!")
-        exit()
-    try:
-        submission = reddit.submission(submissionId)
-    except:
-        print(f"Submission with id '{submissionId}' not found!")
-        exit()
-    return __getContentFromPost(submission)
+    postSelection = int(input("Input: "))
+    selectedPost = posts[postSelection]
+    return __getContentFromPost(selectedPost), selectedPost.id, read_comments
 
 def __getReddit():
     return praw.Reddit(
@@ -59,21 +52,34 @@ def __getReddit():
         user_agent=USER_AGENT
     )
 
-
-def __getContentFromPost(submission) -> VideoScript:
+def __getContentFromPost(submission, read_comments=False) -> VideoScript:
     content = VideoScript(submission.url, submission.title, submission.id)
     print(f"Creating video for post: {submission.title}")
     print(f"Url: {submission.url}")
     print(f"Id: {submission.id}")
 
-    failedAttempts = 0
-    for comment in submission.comments:
-        if (comment.author == None or comment.author == '[deleted]' or comment.author == 'AutoModerator'):
-            continue
-        elif(content.addCommentScene(markdown_to_text.markdown_to_text(comment.body), comment.id)):
-            failedAttempts += 1
-        if (content.canQuickFinish() or (failedAttempts > 4 and content.canBeFinished())):
-            break
+    if read_comments:
+        print("SELFTEXT")
+        paragraphs = submission.selftext.split('\n')
+        filtered_paragraphs = []
+        paragraph_number = 0
+        for paragraph in paragraphs:
+            stripped_paragraph = paragraph.strip()
+            if stripped_paragraph.lower().startswith('edit:') or stripped_paragraph.lower().startswith('tl;dr'):
+                break
+            if(not (len(stripped_paragraph) == 0 or stripped_paragraph.isspace())):
+                filtered_paragraphs.append(stripped_paragraph)
+            content.addStoryScene(paragraph, f"paragraph{paragraph_number}")
+            paragraph_number += 1
+    else:
+        failedAttempts = 0
+        for comment in submission.comments:
+            if (comment.author == None or comment.author == '[deleted]' or comment.author == 'AutoModerator'):
+                continue
+            elif(content.addCommentScene(markdown_to_text.markdown_to_text(comment.body), comment.id)):
+                failedAttempts += 1
+            if (content.canQuickFinish() or (failedAttempts > 4 and content.canBeFinished())):
+                break
     return content
 
 def __getExistingPostIds(outputDir):

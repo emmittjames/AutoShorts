@@ -38,6 +38,13 @@ class VideoScript:
             return True
         self.frames.append(frame)
 
+    def addStoryScene(self, text, paragraph_number) -> None:
+        frame = ScreenshotScene(text, paragraph_number)
+        frame.audioClip = self.__createVoiceOver(paragraph_number, text)
+        if (frame.audioClip == None):
+            return True
+        self.frames.append(frame)
+
     def getDuration(self):
         return self.totalDuration
 
