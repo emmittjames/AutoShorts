@@ -94,7 +94,7 @@ def createVideo():
     if final.duration > 60:
         partOne = final.subclip(0, 59)
         fileName = f"{script.title} part 1 #redditstories #reddit #redditposts"
-        outputFile = f"{outputDir}/{fileName}"
+        outputFile = f"{outputDir}/{fileName}.mp4"
         partOne.write_videofile(
             outputFile, 
             codec='mpeg4',
