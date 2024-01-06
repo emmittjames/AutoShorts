@@ -73,14 +73,12 @@ def __takeScreenshot(filePrefix, driver, wait, handle="Post", postId=""):
     return fileName
 
 def __takeStoryScreenshotsTitle(filePrefix, driver, wait, postId):
-    """
     close_popup(driver, wait)
     creditBar = driver.find_element(By.CSS_SELECTOR, f"[slot='credit-bar']")
     fileName1 = f"{screenshotDir}/{filePrefix}-creditBar.png"
     fp = open(fileName1, "wb")
     fp.write(creditBar.screenshot_as_png)
     fp.close()
-    """
 
     postTitle = driver.find_element(By.CSS_SELECTOR, f"[slot='title']")
     fileName2 = f"{screenshotDir}/{filePrefix}-postTitle.png"
@@ -88,13 +86,11 @@ def __takeStoryScreenshotsTitle(filePrefix, driver, wait, postId):
     fp.write(postTitle.screenshot_as_png)
     fp.close()
 
-    """
     fileNameFinal = f"{screenshotDir}/{filePrefix}-combinedHeader.png"
     combine_images_vertically(fileName1, fileName2, fileNameFinal)
-    """
     
-    # return fileNameFinal
-    return fileName2
+    return fileNameFinal
+    # return fileName2
 
 def __takeStoryScreenshots(filePrefix, driver, wait, postId, paragraphNum):
     post_body = driver.find_element(By.ID, f"t3_{postId}-post-rtjson-content")
