@@ -100,6 +100,32 @@ def createVideo():
             threads=threads, 
             bitrate=bitrate
         )
+        if final.duration > 120:
+            partTwo = final.subclip(60, 119)
+            outputFile = f"{outputDir}/Part 2 - {fileName}.mp4"
+            partTwo.write_videofile(
+                outputFile, 
+                codec='mpeg4',
+                threads=threads, 
+                bitrate=bitrate
+            )
+            partThree = final.subclip(120, final.duration)
+            outputFile = f"{outputDir}/Part 3 - {fileName}.mp4"
+            partThree.write_videofile(
+                outputFile, 
+                codec='mpeg4',
+                threads=threads, 
+                bitrate=bitrate
+            )
+        else:
+            partTwo = final.subclip(59, final.duration)
+            outputFile = f"{outputDir}/Part 2 - {fileName}.mp4"
+            partTwo.write_videofile(
+                outputFile, 
+                codec='mpeg4',
+                threads=threads, 
+                bitrate=bitrate
+            )
 
     print(f"Video completed in {time.time() - startTime}")
 
