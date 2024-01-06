@@ -24,12 +24,14 @@ def getContent(outputDir, postOptionCount) -> VideoScript:
     subreddit_mapping = {
         0: "askreddit",
         1: "amitheasshole",
+        2: "offmychest",
+        3: "tifu",
     }
     for key, value in subreddit_mapping.items():
         print(f"[{key}] {value}")
     SUBREDDIT = subreddit_mapping[int(input("Input: "))]
 
-    if SUBREDDIT == "amitheasshole":
+    if SUBREDDIT == "amitheasshole" or SUBREDDIT == "offmychest" or SUBREDDIT == "tifu":
         read_comments = False
 
     for submission in reddit.subreddit(SUBREDDIT).top(time_filter="day", limit=postOptionCount*3):
