@@ -14,13 +14,23 @@ class VideoScript:
     url = ""
     totalDuration = 0
     frames = []
+    read_comments = True
 
-    def __init__(self, url, title, fileId) -> None:
+    def __init__(self, url, title, fileId, read_comments=True) -> None:
         self.fileName = f"{datetime.today().strftime('%Y-%m-%d')}-{fileId}"
         self.url = url
         self.title = title
         self.titleAudioClip = self.__createVoiceOver("title", title)
-        print("done")
+        self.read_comments = read_comments
+        if not read_comments:
+            global MAX_WORDS_PER_COMMENT 
+            MAX_WORDS_PER_COMMENT = 9999
+            global MIN_COMMENTS_FOR_FINISH
+            MIN_COMMENTS_FOR_FINISH = 0
+            global MIN_DURATION
+            MIN_DURATION = 0
+            global MAX_DURATION
+            MAX_DURATION = 9999
 
     def canBeFinished(self) -> bool:
         return (len(self.frames) > 0) and (self.totalDuration > MIN_DURATION)
@@ -66,7 +76,7 @@ class VideoScript:
         if len(text) < 10 and name != "title":
             special_voice = True
 
-        file_path = voiceover.create_voice_over(f"{self.fileName}-{name}", script_path, special_voice)
+        file_path = voiceover.create_voice_over(f"{self.fileName}-{name}", script_path, special_voice, self.read_comments)
         print(f"Created voice over: {file_path}")
         audioClip = AudioFileClip(file_path)
         if (self.totalDuration + audioClip.duration > MAX_DURATION):

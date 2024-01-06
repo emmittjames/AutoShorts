@@ -43,7 +43,7 @@ def getContent(outputDir, postOptionCount) -> VideoScript:
 
     postSelection = int(input("Input: "))
     selectedPost = posts[postSelection]
-    return __getContentFromPost(selectedPost), selectedPost.id, read_comments
+    return __getContentFromPost(selectedPost, read_comments), selectedPost.id, read_comments
 
 def __getReddit():
     return praw.Reddit(
@@ -52,8 +52,8 @@ def __getReddit():
         user_agent=USER_AGENT
     )
 
-def __getContentFromPost(submission, read_comments=False) -> VideoScript:
-    content = VideoScript(submission.url, submission.title, submission.id)
+def __getContentFromPost(submission, read_comments) -> VideoScript:
+    content = VideoScript(submission.url, submission.title, submission.id, read_comments)
     print(f"Creating video for post: {submission.title}")
     print(f"Url: {submission.url}")
     print(f"Id: {submission.id}")
@@ -75,7 +75,8 @@ def __getContentFromPost(submission, read_comments=False) -> VideoScript:
             if stripped_paragraph.lower().startswith('edit:') or stripped_paragraph.lower().startswith('tl;dr'):
                 break
             if(not (len(stripped_paragraph) == 0 or stripped_paragraph.isspace())):
-                filtered_paragraphs.append(stripped_paragraph)
+                clean_paragraph = stripped_paragraph.lower().replace("aita", "am I the A hole", 1)
+                filtered_paragraphs.append(clean_paragraph)
         paragraph_number = 0
         for paragraph in filtered_paragraphs:
             content.addStoryScene(paragraph, f"paragraph{paragraph_number}")

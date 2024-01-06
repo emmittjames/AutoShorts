@@ -14,6 +14,8 @@ def getPostScreenshots(filePrefix, script, postId, read_comments):
     print("Taking screenshots...")
     driver, wait = __setupDriver(script.url)
     print("Driver setup complete")
+    driver.switch_to.window(driver.window_handles[0])
+    close_popup(driver, wait)
     if read_comments:
         script.titleSCFile = __takeScreenshot(filePrefix, driver, wait, handle="Post", postId=postId)
         time.sleep(1)
@@ -23,15 +25,14 @@ def getPostScreenshots(filePrefix, script, postId, read_comments):
             commentFrame.screenShotFile = __takeScreenshot(filePrefix, driver, wait, f"t1_{commentFrame.commentId}")
     else:
         script.titleSCFile = __takeStoryScreenshotsTitle(filePrefix, driver, wait, postId=postId)
+        driver.find_element(By.ID, f"t3_{postId}-read-more-button").click()
         for commentFrame in script.frames:
             paragraphNum = int(re.search(r'\d+$', commentFrame.commentId).group())
             commentFrame.screenShotFile = __takeStoryScreenshots(filePrefix, driver, wait, postId=postId, paragraphNum=paragraphNum)
     driver.quit()
 
 def __takeScreenshot(filePrefix, driver, wait, handle="Post", postId=""):
-    driver.switch_to.window(driver.window_handles[0])
     if(handle == "Post"):
-        close_popup(driver, wait)
         # search = wait.until(EC.presence_of_element_located((By.ID, 't3_' + postId)))
         # search = driver.find_element(By.ID, 't3_' + postId)
         search = driver.find_element(By.ID, f"t3_{postId}")
@@ -51,12 +52,14 @@ def __takeScreenshot(filePrefix, driver, wait, handle="Post", postId=""):
     return fileName
 
 def __takeStoryScreenshotsTitle(filePrefix, driver, wait, postId):
+    """
     close_popup(driver, wait)
     creditBar = driver.find_element(By.CSS_SELECTOR, f"[slot='credit-bar']")
     fileName1 = f"{screenshotDir}/{filePrefix}-creditBar.png"
     fp = open(fileName1, "wb")
     fp.write(creditBar.screenshot_as_png)
     fp.close()
+    """
 
     postTitle = driver.find_element(By.CSS_SELECTOR, f"[slot='title']")
     fileName2 = f"{screenshotDir}/{filePrefix}-postTitle.png"
@@ -64,13 +67,16 @@ def __takeStoryScreenshotsTitle(filePrefix, driver, wait, postId):
     fp.write(postTitle.screenshot_as_png)
     fp.close()
 
+    """
     fileNameFinal = f"{screenshotDir}/{filePrefix}-combinedHeader.png"
     combine_images_vertically(fileName1, fileName2, fileNameFinal)
+    """
     
-    return fileNameFinal
+    # return fileNameFinal
+    return fileName2
 
 def __takeStoryScreenshots(filePrefix, driver, wait, postId, paragraphNum):
-    post_body = search = driver.find_element(By.ID, f"{postId}-post-rtjson-content")
+    post_body = driver.find_element(By.ID, f"t3_{postId}-post-rtjson-content")
     paragraphs = post_body.find_elements(By.TAG_NAME, 'p')
 
     # for paragraph in paragraphs:

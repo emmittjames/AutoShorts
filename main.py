@@ -59,6 +59,7 @@ def createVideo():
     print("Editing clips together...")
     clips = []
     marginSize = int(config["Video"]["MarginSize"])
+    print("titleSCFile: " + script.titleSCFile)
     clips.append(__createClip(script.titleSCFile, script.titleAudioClip, marginSize))
     for comment in script.frames:
         clips.append(__createClip(comment.screenShotFile, comment.audioClip, marginSize))
@@ -80,7 +81,7 @@ def createVideo():
     print("Rendering final video...")
     bitrate = config["Video"]["Bitrate"]
     threads = config["Video"]["Threads"]
-    fileName = script.title + " #askreddit #redditstories #reddit"
+    fileName = script.title + " #redditstories #reddit #redditposts"
     fileName = fileName.replace("/", " or ")
     outputFile = f"{outputDir}/{fileName}.mp4"
     final.write_videofile(
