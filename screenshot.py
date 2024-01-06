@@ -2,6 +2,7 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.common.exceptions import NoSuchElementException
 import time
 
 # Config
@@ -25,18 +26,23 @@ def __takeScreenshot(filePrefix, driver, wait, handle="Post", postId=""):
     driver.switch_to.window(driver.window_handles[0])
     if(handle == "Post"):
         tries = 0
-        while tries < 3:
+        while tries < 10:
             try:
+                driver.switch_to.default_content()
                 # iframe = driver.find_element(By.TAG_NAME, "iframe")
                 iframe = wait.until(EC.presence_of_element_located((By.TAG_NAME, "iframe")))
                 driver.switch_to.frame(iframe)
                 driver.find_element(By.CSS_SELECTOR, f"[aria-label='Close']").click()
                 print("closed iframe")
                 tries += 999
-            except:
+            except Exception as e:
+                print(f"An error occurred: {e}")
                 print("No iframe found | tries:", tries)
                 tries+=1
                 driver.switch_to.window(driver.window_handles[0])
+                if tries >= 9:
+                    # time.sleep(10000)
+                    raise NoSuchElementException("Couldn't close popup")
         driver.switch_to.default_content()
 
         # search = wait.until(EC.presence_of_element_located((By.ID, 't3_' + postId)))
