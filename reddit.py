@@ -29,7 +29,7 @@ def getContent(outputDir, postOptionCount) -> VideoScript:
         print(f"[{key}] {value}")
     SUBREDDIT = subreddit_mapping[int(input("Input: "))]
 
-    if(SUBREDDIT == "amitheasshole"):
+    if SUBREDDIT == "amitheasshole":
         read_comments = False
 
     for submission in reddit.subreddit(SUBREDDIT).top(time_filter="day", limit=postOptionCount*3):
@@ -79,8 +79,7 @@ def __getContentFromPost(submission, read_comments) -> VideoScript:
                 break
             """
             if(not (len(stripped_paragraph) == 0 or stripped_paragraph.isspace())):
-                clean_paragraph = stripped_paragraph.lower().replace("aita", "am I the A hole", 1)
-                filtered_paragraphs.append(clean_paragraph)
+                filtered_paragraphs.append(stripped_paragraph)
         paragraph_number = 0
         for paragraph in filtered_paragraphs:
             content.addStoryScene(paragraph, f"paragraph{paragraph_number}")

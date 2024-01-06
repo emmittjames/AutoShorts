@@ -111,9 +111,12 @@ def __takeStoryScreenshots(filePrefix, driver, wait, postId, paragraphNum):
 def combine_images_vertically(image_path1, image_path2, output_path):
     img1 = Image.open(image_path1)
     img2 = Image.open(image_path2)
+    img1 = img1.convert('RGB')
+    img2 = img2.convert('RGB')
     if img1.width != img2.width:
         raise ValueError("Images must have the same width")
-    combined_image = Image.new('RGB', (img1.width, img1.height + img2.height))
+    # combined_image = Image.new('RGB', (img1.width, img1.height + img2.height))
+    combined_image = Image.new('RGBA', (img1.width, img1.height + img2.height), (255, 255, 255, 0))
     combined_image.paste(img1, (0, 0))
     combined_image.paste(img2, (0, img1.height))
     combined_image.save(output_path)

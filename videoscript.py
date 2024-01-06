@@ -61,13 +61,14 @@ class VideoScript:
     def getFileName(self):
         return self.fileName
     
-    def remove_any_links(self, text):
+    def clean_text(self, text):
         url_pattern = re.compile(r'https?://\S+|www\.\S+')
         cleaned_text = url_pattern.sub('', text)
+        cleaned_text = cleaned_text.lower().replace("aita", "am I the Ay hole", 10)
         return cleaned_text
 
     def __createVoiceOver(self, name, text):
-        text = self.remove_any_links(text)
+        text = self.clean_text(text)
         script_path = f"Scripts/{self.fileName}"
         with open(script_path, 'w') as file:
             file.write(text)
