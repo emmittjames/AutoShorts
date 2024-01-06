@@ -58,7 +58,7 @@ def __takeStoryScreenshotsTitle(filePrefix, driver, wait, postId):
     fp.write(creditBar.screenshot_as_png)
     fp.close()
 
-    postTitle = driver.find_element(By.ID, f"post-title-{postId}")
+    postTitle = driver.find_element(By.CSS_SELECTOR, f"[slot='title']")
     fileName2 = f"{screenshotDir}/{filePrefix}-postTitle.png"
     fp = open(fileName2, "wb")
     fp.write(postTitle.screenshot_as_png)

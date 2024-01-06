@@ -59,19 +59,6 @@ def __getContentFromPost(submission, read_comments=False) -> VideoScript:
     print(f"Id: {submission.id}")
 
     if read_comments:
-        print("SELFTEXT")
-        paragraphs = submission.selftext.split('\n')
-        filtered_paragraphs = []
-        paragraph_number = 0
-        for paragraph in paragraphs:
-            stripped_paragraph = paragraph.strip()
-            if stripped_paragraph.lower().startswith('edit:') or stripped_paragraph.lower().startswith('tl;dr'):
-                break
-            if(not (len(stripped_paragraph) == 0 or stripped_paragraph.isspace())):
-                filtered_paragraphs.append(stripped_paragraph)
-            content.addStoryScene(paragraph, f"paragraph{paragraph_number}")
-            paragraph_number += 1
-    else:
         failedAttempts = 0
         for comment in submission.comments:
             if (comment.author == None or comment.author == '[deleted]' or comment.author == 'AutoModerator'):
@@ -80,6 +67,19 @@ def __getContentFromPost(submission, read_comments=False) -> VideoScript:
                 failedAttempts += 1
             if (content.canQuickFinish() or (failedAttempts > 4 and content.canBeFinished())):
                 break
+    else:
+        paragraphs = submission.selftext.split('\n')
+        filtered_paragraphs = []
+        for paragraph in paragraphs:
+            stripped_paragraph = paragraph.strip()
+            if stripped_paragraph.lower().startswith('edit:') or stripped_paragraph.lower().startswith('tl;dr'):
+                break
+            if(not (len(stripped_paragraph) == 0 or stripped_paragraph.isspace())):
+                filtered_paragraphs.append(stripped_paragraph)
+        paragraph_number = 0
+        for paragraph in filtered_paragraphs:
+            content.addStoryScene(paragraph, f"paragraph{paragraph_number}")
+            paragraph_number += 1
     return content
 
 def __getExistingPostIds(outputDir):
