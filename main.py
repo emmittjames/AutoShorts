@@ -93,7 +93,7 @@ def createVideo():
 
     if final.duration > 60:
         partOne = final.subclip(0, 59)
-        outputFile = f"{outputDir}/Part 1 - {fileName}.mp4"
+        outputFile = f"{outputDir}/{fileName} part 1.mp4"
         partOne.write_videofile(
             outputFile, 
             codec='mpeg4',
@@ -102,7 +102,7 @@ def createVideo():
         )
         if final.duration > 120:
             partTwo = final.subclip(60, 119)
-            outputFile = f"{outputDir}/Part 2 - {fileName}.mp4"
+            outputFile = f"{outputDir}/{fileName} part 2.mp4"
             partTwo.write_videofile(
                 outputFile, 
                 codec='mpeg4',
@@ -110,7 +110,7 @@ def createVideo():
                 bitrate=bitrate
             )
             partThree = final.subclip(120, final.duration)
-            outputFile = f"{outputDir}/Part 3 - {fileName}.mp4"
+            outputFile = f"{outputDir}/{fileName} part 3.mp4"
             partThree.write_videofile(
                 outputFile, 
                 codec='mpeg4',
@@ -119,7 +119,7 @@ def createVideo():
             )
         else:
             partTwo = final.subclip(59, final.duration)
-            outputFile = f"{outputDir}/Part 2 - {fileName}.mp4"
+            outputFile = f"{outputDir}/{fileName} part 2.mp4"
             partTwo.write_videofile(
                 outputFile, 
                 codec='mpeg4',
