@@ -28,7 +28,7 @@ def getPostScreenshots(filePrefix, script, postId, read_comments):
         script.titleSCFile = __takeStoryScreenshotsTitle(filePrefix, driver, wait, postId=postId)
         driver.find_element(By.ID, f"t3_{postId}-read-more-button").click()
         for commentFrame in script.frames:
-            paragraphNum = int(re.search(r'\d+$', commentFrame.commentId).group())
+            paragraphNum = int(re.search(r'\d+$', commentFrame.commentId).group()) # get last number in the paragraph string
             commentFrame.screenShotFile = __takeStoryScreenshots(filePrefix, driver, wait, postId=postId, paragraphNum=paragraphNum)
     driver.quit()
 
@@ -73,14 +73,12 @@ def __takeScreenshot(filePrefix, driver, wait, handle="Post", postId=""):
     return fileName
 
 def __takeStoryScreenshotsTitle(filePrefix, driver, wait, postId):
-    """
     close_popup(driver, wait)
     creditBar = driver.find_element(By.CSS_SELECTOR, f"[slot='credit-bar']")
     fileName1 = f"{screenshotDir}/{filePrefix}-creditBar.png"
     fp = open(fileName1, "wb")
     fp.write(creditBar.screenshot_as_png)
     fp.close()
-    """
 
     postTitle = driver.find_element(By.CSS_SELECTOR, f"[slot='title']")
     fileName2 = f"{screenshotDir}/{filePrefix}-postTitle.png"
@@ -88,13 +86,11 @@ def __takeStoryScreenshotsTitle(filePrefix, driver, wait, postId):
     fp.write(postTitle.screenshot_as_png)
     fp.close()
 
-    """
     fileNameFinal = f"{screenshotDir}/{filePrefix}-combinedHeader.png"
     combine_images_vertically(fileName1, fileName2, fileNameFinal)
-    """
     
-    # return fileNameFinal
-    return fileName2
+    return fileNameFinal
+    # return fileName2
 
 def __takeStoryScreenshots(filePrefix, driver, wait, postId, paragraphNum):
     post_body = driver.find_element(By.ID, f"t3_{postId}-post-rtjson-content")
@@ -111,9 +107,12 @@ def __takeStoryScreenshots(filePrefix, driver, wait, postId, paragraphNum):
 def combine_images_vertically(image_path1, image_path2, output_path):
     img1 = Image.open(image_path1)
     img2 = Image.open(image_path2)
+    img1 = img1.convert('RGB')
+    img2 = img2.convert('RGB')
     if img1.width != img2.width:
         raise ValueError("Images must have the same width")
-    combined_image = Image.new('RGB', (img1.width, img1.height + img2.height))
+    # combined_image = Image.new('RGB', (img1.width, img1.height + img2.height))
+    combined_image = Image.new('RGBA', (img1.width, img1.height + img2.height), (255, 255, 255, 0))
     combined_image.paste(img1, (0, 0))
     combined_image.paste(img2, (0, img1.height))
     combined_image.save(output_path)

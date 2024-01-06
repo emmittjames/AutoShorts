@@ -17,10 +17,6 @@ class VideoScript:
     read_comments = True
 
     def __init__(self, url, title, fileId, read_comments=True) -> None:
-        self.fileName = f"{datetime.today().strftime('%Y-%m-%d')}-{fileId}"
-        self.url = url
-        self.title = title
-        self.titleAudioClip = self.__createVoiceOver("title", title)
         self.read_comments = read_comments
         if not read_comments:
             global MAX_WORDS_PER_COMMENT 
@@ -31,6 +27,10 @@ class VideoScript:
             MIN_DURATION = 0
             global MAX_DURATION
             MAX_DURATION = 9999
+        self.fileName = f"{datetime.today().strftime('%Y-%m-%d')}-{fileId}"
+        self.url = url
+        self.title = title
+        self.titleAudioClip = self.__createVoiceOver("title", title)
 
     def canBeFinished(self) -> bool:
         return (len(self.frames) > 0) and (self.totalDuration > MIN_DURATION)
@@ -61,13 +61,14 @@ class VideoScript:
     def getFileName(self):
         return self.fileName
     
-    def remove_any_links(self, text):
+    def clean_text(self, text):
         url_pattern = re.compile(r'https?://\S+|www\.\S+')
         cleaned_text = url_pattern.sub('', text)
+        cleaned_text = cleaned_text.lower().replace("aita", "am I the Ay hole", 10)
         return cleaned_text
 
     def __createVoiceOver(self, name, text):
-        text = self.remove_any_links(text)
+        text = self.clean_text(text)
         script_path = f"Scripts/{self.fileName}"
         with open(script_path, 'w') as file:
             file.write(text)
