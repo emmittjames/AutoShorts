@@ -72,8 +72,12 @@ def __getContentFromPost(submission, read_comments) -> VideoScript:
         filtered_paragraphs = []
         for paragraph in paragraphs:
             stripped_paragraph = paragraph.strip()
-            if stripped_paragraph.lower().startswith('edit:') or stripped_paragraph.lower().startswith('tl;dr'):
+            if stripped_paragraph.lower().startswith('tl;dr'):
                 break
+            """
+            if stripped_paragraph.lower().startswith('edit') or stripped_paragraph.lower().startswith('update'):
+                break
+            """
             if(not (len(stripped_paragraph) == 0 or stripped_paragraph.isspace())):
                 clean_paragraph = stripped_paragraph.lower().replace("aita", "am I the A hole", 1)
                 filtered_paragraphs.append(clean_paragraph)

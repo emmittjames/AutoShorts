@@ -90,6 +90,17 @@ def createVideo():
         threads = threads, 
         bitrate = bitrate
     )
+
+    if final.duration > 60:
+        partOne = final.subclip(0, 59)
+        outputFile = f"{outputDir}/Part 1 - {fileName}.mp4"
+        partOne.write_videofile(
+            outputFile, 
+            codec='mpeg4',
+            threads=threads, 
+            bitrate=bitrate
+        )
+
     print(f"Video completed in {time.time() - startTime}")
 
     """
