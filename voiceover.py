@@ -9,13 +9,18 @@ voices = [
 
 special_voices = ['en_male_pirate', 'en_female_madam_leota']
 
-def create_voice_over(fileName, script_path, special=False):
-    if (special and len(special_voices) > 0 and random.random() < 0.5):
-            voice = random.choice(special_voices)
-            special_voices.remove(voice)
+story_voices = ['en_us_006']
+
+def create_voice_over(fileName, script_path, special=False, read_comments=True):
+    if read_comments:
+        if (special and len(special_voices) > 0 and random.random() < 0.5):
+                voice = random.choice(special_voices)
+                special_voices.remove(voice)
+        else:
+            voice = random.choice(voices)
+            voices.remove(voice)
     else:
-        voice = random.choice(voices)
-        voices.remove(voice)
+        voice = random.choice(story_voices)
 
     file_path = f"{voiceoverDir}/{fileName}.mp3"
 

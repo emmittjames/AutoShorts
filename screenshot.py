@@ -3,27 +3,36 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import NoSuchElementException
-import time
+from PIL import Image
+import time, re
 
 # Config
 screenshotDir = "Screenshots"
 screenWidth = 770
 screenHeight = 800
 
-def getPostScreenshots(filePrefix, script, postId):
+def getPostScreenshots(filePrefix, script, postId, read_comments):
     print("Taking screenshots...")
     driver, wait = __setupDriver(script.url)
     print("Driver setup complete")
-    script.titleSCFile = __takeScreenshot(filePrefix, driver, wait, handle="Post", postId=postId)
-    time.sleep(1)
-    driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-    time.sleep(3)
-    for commentFrame in script.frames:
-        commentFrame.screenShotFile = __takeScreenshot(filePrefix, driver, wait, f"t1_{commentFrame.commentId}")
+    driver.switch_to.window(driver.window_handles[0])
+    close_popup(driver, wait)
+    if read_comments:
+        script.titleSCFile = __takeScreenshot(filePrefix, driver, wait, handle="Post", postId=postId)
+        time.sleep(1)
+        driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+        time.sleep(3)
+        for commentFrame in script.frames:
+            commentFrame.screenShotFile = __takeScreenshot(filePrefix, driver, wait, f"t1_{commentFrame.commentId}")
+    else:
+        script.titleSCFile = __takeStoryScreenshotsTitle(filePrefix, driver, wait, postId=postId)
+        driver.find_element(By.ID, f"t3_{postId}-read-more-button").click()
+        for commentFrame in script.frames:
+            paragraphNum = int(re.search(r'\d+$', commentFrame.commentId).group())
+            commentFrame.screenShotFile = __takeStoryScreenshots(filePrefix, driver, wait, postId=postId, paragraphNum=paragraphNum)
     driver.quit()
 
 def __takeScreenshot(filePrefix, driver, wait, handle="Post", postId=""):
-    driver.switch_to.window(driver.window_handles[0])
     if(handle == "Post"):
         tries = 0
         while tries < 10:
@@ -46,7 +55,8 @@ def __takeScreenshot(filePrefix, driver, wait, handle="Post", postId=""):
         driver.switch_to.default_content()
 
         # search = wait.until(EC.presence_of_element_located((By.ID, 't3_' + postId)))
-        search = driver.find_element(By.ID, 't3_' + postId)
+        # search = driver.find_element(By.ID, 't3_' + postId)
+        search = driver.find_element(By.ID, f"t3_{postId}")
     else:
         search = driver.find_element(By.CSS_SELECTOR, f"[thingid='{handle}']")
         try:
@@ -56,15 +66,73 @@ def __takeScreenshot(filePrefix, driver, wait, handle="Post", postId=""):
         except:
             # print("No comment collapser found")
             pass
-            
-    # driver.execute_script("window.focus();")
-    # driver.switch_to.window(driver.window_handles[0])
-
     fileName = f"{screenshotDir}/{filePrefix}-{handle}.png"
     fp = open(fileName, "wb")
     fp.write(search.screenshot_as_png)
     fp.close()
     return fileName
+
+def __takeStoryScreenshotsTitle(filePrefix, driver, wait, postId):
+    """
+    close_popup(driver, wait)
+    creditBar = driver.find_element(By.CSS_SELECTOR, f"[slot='credit-bar']")
+    fileName1 = f"{screenshotDir}/{filePrefix}-creditBar.png"
+    fp = open(fileName1, "wb")
+    fp.write(creditBar.screenshot_as_png)
+    fp.close()
+    """
+
+    postTitle = driver.find_element(By.CSS_SELECTOR, f"[slot='title']")
+    fileName2 = f"{screenshotDir}/{filePrefix}-postTitle.png"
+    fp = open(fileName2, "wb")
+    fp.write(postTitle.screenshot_as_png)
+    fp.close()
+
+    """
+    fileNameFinal = f"{screenshotDir}/{filePrefix}-combinedHeader.png"
+    combine_images_vertically(fileName1, fileName2, fileNameFinal)
+    """
+    
+    # return fileNameFinal
+    return fileName2
+
+def __takeStoryScreenshots(filePrefix, driver, wait, postId, paragraphNum):
+    post_body = driver.find_element(By.ID, f"t3_{postId}-post-rtjson-content")
+    paragraphs = post_body.find_elements(By.TAG_NAME, 'p')
+
+    # for paragraph in paragraphs:
+    search = paragraphs[paragraphNum]
+    fileName = f"{screenshotDir}/{filePrefix}-p{paragraphNum}.png"
+    fp = open(fileName, "wb")
+    fp.write(search.screenshot_as_png)
+    fp.close()
+    return fileName
+
+def combine_images_vertically(image_path1, image_path2, output_path):
+    img1 = Image.open(image_path1)
+    img2 = Image.open(image_path2)
+    if img1.width != img2.width:
+        raise ValueError("Images must have the same width")
+    combined_image = Image.new('RGB', (img1.width, img1.height + img2.height))
+    combined_image.paste(img1, (0, 0))
+    combined_image.paste(img2, (0, img1.height))
+    combined_image.save(output_path)
+
+def close_popup(driver, wait):
+    tries = 0
+    while tries < 3:
+        try:
+            # iframe = driver.find_element(By.TAG_NAME, "iframe")
+            iframe = wait.until(EC.presence_of_element_located((By.TAG_NAME, "iframe")))
+            driver.switch_to.frame(iframe)
+            driver.find_element(By.CSS_SELECTOR, f"[aria-label='Close']").click()
+            print("closed iframe")
+            tries += 999
+        except:
+            print("No iframe found | tries:", tries)
+            tries+=1
+            driver.switch_to.window(driver.window_handles[0])
+    driver.switch_to.default_content()
 
 def __setupDriver(url: str):
     options = webdriver.FirefoxOptions()
