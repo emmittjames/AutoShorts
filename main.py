@@ -81,7 +81,7 @@ def createVideo():
     print("Rendering final video...")
     bitrate = config["Video"]["Bitrate"]
     threads = config["Video"]["Threads"]
-    fileName = script.title + " #redditstories #reddit #redditposts"
+    fileName = f"{script.title} #redditstories #reddit #redditposts"
     fileName = fileName.replace("/", " or ")
     outputFile = f"{outputDir}/{fileName}.mp4"
     final.write_videofile(
@@ -93,13 +93,15 @@ def createVideo():
 
     if final.duration > 60:
         partOne = final.subclip(0, 59)
-        outputFile = f"{outputDir}/{fileName} part 1.mp4"
+        fileName = f"{script.title} part 1 #redditstories #reddit #redditposts"
+        outputFile = f"{outputDir}/{fileName}"
         partOne.write_videofile(
             outputFile, 
             codec='mpeg4',
             threads=threads, 
             bitrate=bitrate
         )
+    """
         if final.duration > 120:
             partTwo = final.subclip(60, 119)
             outputFile = f"{outputDir}/{fileName} part 2.mp4"
@@ -126,6 +128,7 @@ def createVideo():
                 threads=threads, 
                 bitrate=bitrate
             )
+    """
 
     print(f"Video completed in {time.time() - startTime}")
 
