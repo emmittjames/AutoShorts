@@ -65,6 +65,7 @@ class VideoScript:
         url_pattern = re.compile(r'https?://\S+|www\.\S+')
         cleaned_text = url_pattern.sub('', text)
         cleaned_text = cleaned_text.lower().replace("aita", "am I the Ay hole", 10)
+        cleaned_text = cleaned_text.lower().replace("tifu", "today I f'd up", 10)
         return cleaned_text
 
     def __createVoiceOver(self, name, text):
