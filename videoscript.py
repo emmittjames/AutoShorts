@@ -19,13 +19,10 @@ class VideoScript:
     def __init__(self, url, title, fileId, read_comments=True) -> None:
         self.read_comments = read_comments
         if not read_comments:
-            global MAX_WORDS_PER_COMMENT 
+            global MAX_WORDS_PER_COMMENT, MIN_COMMENTS_FOR_FINISH, MIN_DURATION, MAX_DURATION
             MAX_WORDS_PER_COMMENT = 9999
-            global MIN_COMMENTS_FOR_FINISH
             MIN_COMMENTS_FOR_FINISH = 0
-            global MIN_DURATION
             MIN_DURATION = 0
-            global MAX_DURATION
             MAX_DURATION = 9999
         self.fileName = f"{datetime.today().strftime('%Y-%m-%d')}-{fileId}"
         self.url = url
