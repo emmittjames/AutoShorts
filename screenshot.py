@@ -57,13 +57,15 @@ def __takeScreenshot(filePrefix, driver, wait, handle="Post", postId=""):
 
 def __takeStoryScreenshotsTitle(filePrefix, driver, wait, postId):
     close_popup(driver, wait)
-    creditBar = driver.find_element(By.CSS_SELECTOR, f"[slot='credit-bar']")
+    # creditBar = driver.find_element(By.CSS_SELECTOR, f"[slot='credit-bar']")
+    creditBar = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, f"[slot='credit-bar']")))
     fileName1 = f"{screenshotDir}/{filePrefix}-creditBar.png"
     fp = open(fileName1, "wb")
     fp.write(creditBar.screenshot_as_png)
     fp.close()
 
-    postTitle = driver.find_element(By.CSS_SELECTOR, f"[slot='title']")
+    # postTitle = driver.find_element(By.CSS_SELECTOR, f"[slot='title']")
+    postTitle = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, f"[slot='title']")))
     fileName2 = f"{screenshotDir}/{filePrefix}-postTitle.png"
     fp = open(fileName2, "wb")
     fp.write(postTitle.screenshot_as_png)
@@ -133,7 +135,8 @@ def close_popup(driver, wait):
             for iframe in all_iframes:
                 try:
                     driver.switch_to.frame(iframe)
-                    popup_close_button = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, "[aria-label='Close']")))
+                    # popup_close_button = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, "[aria-label='Close']")))
+                    popup_close_button = driver.find_element(By.CSS_SELECTOR, f"[aria-label='Close']")
                     popup_close_button.click()
                     print("Closed iframe")
                     return
