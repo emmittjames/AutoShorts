@@ -73,13 +73,10 @@ def __takeStoryScreenshotsTitle(filePrefix, driver, wait, postId):
     combine_images_vertically(fileName1, fileName2, fileNameFinal)
     
     return fileNameFinal
-    # return fileName2
 
 def __takeStoryScreenshots(filePrefix, driver, wait, postId, paragraphNum):
     post_body = driver.find_element(By.ID, f"t3_{postId}-post-rtjson-content")
     paragraphs = post_body.find_elements(By.TAG_NAME, 'p')
-
-    # for paragraph in paragraphs:
     search = paragraphs[paragraphNum]
     fileName = f"{screenshotDir}/{filePrefix}-p{paragraphNum}.png"
     fp = open(fileName, "wb")
@@ -94,34 +91,10 @@ def combine_images_vertically(image_path1, image_path2, output_path):
     img2 = img2.convert('RGB')
     if img1.width != img2.width:
         raise ValueError("Images must have the same width")
-    # combined_image = Image.new('RGB', (img1.width, img1.height + img2.height))
     combined_image = Image.new('RGBA', (img1.width, img1.height + img2.height), (255, 255, 255, 0))
     combined_image.paste(img1, (0, 0))
     combined_image.paste(img2, (0, img1.height))
     combined_image.save(output_path)
-
-"""
-def close_popup(driver, wait):
-    tries = 0
-    while tries < 10:
-        try:
-            driver.switch_to.default_content()
-            # iframe = driver.find_element(By.TAG_NAME, "iframe")
-            iframe = wait.until(EC.presence_of_element_located((By.TAG_NAME, "iframe")))
-            driver.switch_to.frame(iframe)
-            driver.find_element(By.CSS_SELECTOR, f"[aria-label='Close']").click()
-            print("closed iframe")
-            tries += 999
-        except Exception as e:
-            print(f"An error occurred: {e}")
-            print("No iframe found | tries:", tries)
-            tries+=1
-            driver.switch_to.window(driver.window_handles[0])
-            if tries > 9:
-                time.sleep(5)
-                # raise NoSuchElementException("Couldn't close popup")
-    driver.switch_to.default_content()
-"""
 
 def close_popup(driver, wait):
     max_tries = 5
