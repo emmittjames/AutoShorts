@@ -57,15 +57,13 @@ def __takeScreenshot(filePrefix, driver, wait, handle="Post", postId=""):
 
 def __takeStoryScreenshotsTitle(filePrefix, driver, wait, postId):
     close_popup(driver, wait)
-    # creditBar = driver.find_element(By.CSS_SELECTOR, f"[slot='credit-bar']")
-    creditBar = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, f"[slot='credit-bar']")))
+    creditBar = driver.find_element(By.CSS_SELECTOR, f"[slot='credit-bar']")
     fileName1 = f"{screenshotDir}/{filePrefix}-creditBar.png"
     fp = open(fileName1, "wb")
     fp.write(creditBar.screenshot_as_png)
     fp.close()
 
-    # postTitle = driver.find_element(By.CSS_SELECTOR, f"[slot='title']")
-    postTitle = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, f"[slot='title']")))
+    postTitle = driver.find_element(By.CSS_SELECTOR, f"[slot='title']")
     fileName2 = f"{screenshotDir}/{filePrefix}-postTitle.png"
     fp = open(fileName2, "wb")
     fp.write(postTitle.screenshot_as_png)
@@ -139,15 +137,17 @@ def close_popup(driver, wait):
                     popup_close_button = driver.find_element(By.CSS_SELECTOR, f"[aria-label='Close']")
                     popup_close_button.click()
                     print("Closed iframe")
+                    driver.switch_to.default_content()
                     return
                 except Exception as e:
                     print(f"Error in iframe {iframe}: {e}")
                     driver.switch_to.default_content()
             print("No Google popup found | tries:", tries)
             if tries == max_tries - 1:
-                time.sleep(5)
-                # raise NoSuchElementException("Couldn't close popup")
+                # time.sleep(5)
+                raise NoSuchElementException("Couldn't close popup")
         except Exception as e:
+            driver.switch_to.default_content()
             print(f"An error occurred: {e}")
 
 def __setupDriver(url: str):
