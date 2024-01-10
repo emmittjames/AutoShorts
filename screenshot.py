@@ -21,7 +21,7 @@ def getPostScreenshots(filePrefix, script, postId, read_comments):
         script.titleSCFile = __takeScreenshot(filePrefix, driver, wait, handle="Post", postId=postId)
         time.sleep(1)
         driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-        time.sleep(3)
+        time.sleep(1)
         for commentFrame in script.frames:
             commentFrame.screenShotFile = __takeScreenshot(filePrefix, driver, wait, f"t1_{commentFrame.commentId}")
     else:
@@ -100,28 +100,24 @@ def close_popup(driver, wait):
     max_tries = 5
     for tries in range(max_tries):
         driver.switch_to.window(driver.window_handles[0])
-        try:
-            driver.switch_to.default_content()
-            all_iframes = driver.find_elements(By.TAG_NAME, "iframe")
-            for iframe in all_iframes:
-                try:
-                    driver.switch_to.frame(iframe)
-                    # popup_close_button = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, "[aria-label='Close']")))
-                    popup_close_button = driver.find_element(By.CSS_SELECTOR, f"[aria-label='Close']")
-                    popup_close_button.click()
-                    print("Closed iframe")
-                    driver.switch_to.default_content()
-                    return
-                except Exception as e:
-                    print(f"Error in iframe {iframe}: {e}")
-                    driver.switch_to.default_content()
-            print("No Google popup found | tries:", tries)
-            if tries == max_tries - 1:
-                # time.sleep(5)
-                raise NoSuchElementException("Couldn't close popup")
-        except Exception as e:
-            driver.switch_to.default_content()
-            print(f"An error occurred: {e}")
+        driver.switch_to.default_content()
+        all_iframes = driver.find_elements(By.TAG_NAME, "iframe")
+        for iframe in all_iframes:
+            try:
+                driver.switch_to.frame(iframe)
+                # popup_close_button = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, "[aria-label='Close']")))
+                popup_close_button = driver.find_element(By.CSS_SELECTOR, f"[aria-label='Close']")
+                popup_close_button.click()
+                print("Closed iframe")
+                driver.switch_to.default_content()
+                return
+            except Exception as e:
+                print(f"Error in iframe {iframe}")
+                driver.switch_to.default_content()
+        print("No Google popup found | tries:", tries)
+        if tries == max_tries - 1:
+            # time.sleep(5)
+            raise NoSuchElementException("Couldn't close popup")
 
 def __setupDriver(url: str):
     options = webdriver.FirefoxOptions()
