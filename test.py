@@ -23,6 +23,6 @@ title = "Test title"
 description = "Test description"
 keywords = "surfing,Santa Cruz, test"
 category = "24"
-privacy_status = "private"
+privacy_status = "public"
 
 upload_video(file, title, description, keywords, category, privacy_status)
