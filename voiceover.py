@@ -4,10 +4,10 @@ voiceoverDir = "Voiceovers"
 
 voices = [  
             'en_au_001', 'en_au_002', 'en_uk_001', 'en_uk_003', 'en_us_001', 'en_us_006', 'en_us_007', 'en_us_009', 'en_us_010', 
-            'en_male_funny', 'en_us_rocket'
+            'en_male_funny'
         ]
 
-special_voices = ['en_male_pirate', 'en_female_madam_leota']
+special_voices = ['en_male_pirate', 'en_female_madam_leota', 'en_us_rocket']
 
 story_voices = ['en_us_006']
 

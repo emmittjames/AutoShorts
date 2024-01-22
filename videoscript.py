@@ -4,7 +4,7 @@ import voiceover, re
 
 MAX_WORDS_PER_COMMENT = 300
 MIN_COMMENTS_FOR_FINISH = 4
-MIN_DURATION = 30
+MIN_DURATION = 35
 MAX_DURATION = 59
 
 class VideoScript:
