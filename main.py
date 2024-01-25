@@ -77,12 +77,23 @@ def createVideo():
 
     final = final.fx(vfx.speedx, 1.1) # Speed up video
 
+    tags = ["#redditstories", "#reddit", "#redditposts"]
+    fileName = script.title
+    fileName = fileName.replace("/", " or ")
+    if(len(fileName) > 100):
+        fileName = fileName[:100]
+        last_space_index = fileName.rfind(' ')
+        fileName = fileName[:last_space_index]
+    else:
+        for tag in tags:
+            if(len(fileName) + len(tag) < 100):
+                fileName += tag + " "
+    fileName = fileName[:100]
+
     # Write output to file
     print("Rendering final video...")
     bitrate = config["Video"]["Bitrate"]
     threads = config["Video"]["Threads"]
-    fileName = f"{script.title} #redditstories #reddit #redditposts"
-    fileName = fileName.replace("/", " or ")
     outputFile = f"{outputDir}/{fileName}.mp4"
     final_clip = final.subclip(0, 60) 
     final_clip.write_videofile(

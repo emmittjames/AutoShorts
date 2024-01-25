@@ -19,10 +19,10 @@ def upload_video(file, title, description, keywords, category, privacy_status):
 
 
 file = "example.mp4"
-title = "Test title"
-description = "Test description"
-keywords = "surfing,Santa Cruz, test"
+title = "aaaaaaaaaabbbbbbbbbbccccccccccddddddddddeeeeeeeeeeffffffffffgggggggggghhhhhhhhhhiiiiiiiiiijjjjjjjjjjkkkkk"
+description = "Engaging posts originating from all around Reddit! Make sure to check out my channel and subscribe for more awesome Reddit clips."
+keywords = "reddit, redditpost, redditstories, redditstory, askreddit, aita, tifu"
 category = "24"
-privacy_status = "public"
+privacy_status = "private"
 
 upload_video(file, title, description, keywords, category, privacy_status)
