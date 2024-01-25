@@ -93,20 +93,8 @@ def createVideo():
     )
 
     print(f"Video completed in {time.time() - startTime}")
-
-    """
-    # Preview in VLC for approval before uploading
-    if (config["General"].getboolean("PreviewBeforeUpload")):
-        vlcPath = config["General"]["VLCPath"]
-        p = subprocess.Popen([vlcPath, outputFile])
-        print("Waiting for video review. Type anything to continue")
-        wait = input()
-    """
-
     print("Video is ready to upload!")
     print(f"Title: {script.title}  File: {outputFile}")
-    endTime = time.time()
-    print(f"Total time: {endTime - startTime}")
 
 if __name__ == "__main__":
     createVideo()
