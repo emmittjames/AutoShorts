@@ -95,9 +95,9 @@ def createVideo():
     bitrate = config["Video"]["Bitrate"]
     threads = config["Video"]["Threads"]
     outputFile = f"{outputDir}/{fileName}.mp4"
-    if(final.duration > 60):
-        final_clip = final.subclip(0, 60) 
-    final_clip.write_videofile(
+    if(final.duration >= 60):
+        final = final.subclip(0, 59) 
+    final.write_videofile(
         outputFile, 
         codec = 'mpeg4',
         threads = threads, 
