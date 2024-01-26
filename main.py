@@ -95,7 +95,8 @@ def createVideo():
     bitrate = config["Video"]["Bitrate"]
     threads = config["Video"]["Threads"]
     outputFile = f"{outputDir}/{fileName}.mp4"
-    final_clip = final.subclip(0, 60) 
+    if(final.duration > 60):
+        final_clip = final.subclip(0, 60) 
     final_clip.write_videofile(
         outputFile, 
         codec = 'mpeg4',
@@ -106,6 +107,30 @@ def createVideo():
     print(f"Video completed in {time.time() - startTime}")
     print("Video is ready to upload!")
     print(f"Title: {script.title}  File: {outputFile}")
+
+    description = "Engaging posts originating from all around Reddit! Make sure to check out my channel and subscribe for more awesome Reddit clips."
+    keywords = "reddit, redditpost, redditstories, redditstory, askreddit, aita, tifu"
+    category = "24"
+    privacy_status = "private"
+
+    upload_video(outputFile, fileName, description, keywords, category, privacy_status)
+
+def upload_video(file, title, description, keywords, category, privacy_status):
+    command = [
+        "python3", "upload_video.py",
+        "--file", file,
+        "--title", title,
+        "--description", description,
+        "--keywords", keywords,
+        "--category", category,
+        "--privacyStatus", privacy_status
+    ]
+
+    result = subprocess.run(command, capture_output=True, text=True)
+
+    print(result.stdout)
+    if result.stderr:
+        print(result.stderr)
 
 if __name__ == "__main__":
     createVideo()
