@@ -113,7 +113,7 @@ def createVideo():
     category = "24"
     privacy_status = "private"
 
-    upload_video(outputFile, fileName, description, keywords, category, privacy_status)
+    # upload_video(outputFile, fileName, description, keywords, category, privacy_status)
 
 def upload_video(file, title, description, keywords, category, privacy_status):
     command = [

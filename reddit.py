@@ -38,7 +38,9 @@ def getContent(outputDir, postOptionCount) -> VideoScript:
         if (f"{submission.id}.mp4" in existingPostIds or submission.over_18):
             continue
         hoursAgoPosted = (now - submission.created_utc) / 3600
-        print(f"[{len(posts)}] {submission.title} | word count: {len(submission.selftext.split())} | {'{:.1f}'.format(hoursAgoPosted)} hours ago")
+        paragraph_count = submission.selftext.count('\n') + 1
+        word_count = len(submission.selftext.split())
+        print(f"[{len(posts)}] {submission.title} | Word Count: {word_count} | Paragraph Count: {paragraph_count} | {'{:.1f}'.format(hoursAgoPosted)} hours ago")
         posts.append(submission)
         if (len(posts) >= postOptionCount):
             break
