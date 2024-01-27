@@ -77,13 +77,26 @@ def createVideo():
 
     final = final.fx(vfx.speedx, 1.1) # Speed up video
 
+    tags = ["#redditstories", "#reddit", "#redditposts"]
+    fileName = script.title
+    fileName = fileName.replace("/", " or ")
+    if(len(fileName) > 100):
+        fileName = fileName[:100]
+        last_space_index = fileName.rfind(' ')
+        fileName = fileName[:last_space_index]
+    else:
+        for tag in tags:
+            if(len(fileName) + len(tag) < 100):
+                fileName += tag + " "
+    fileName = fileName[:100]
+
     # Write output to file
     print("Rendering final video...")
     bitrate = config["Video"]["Bitrate"]
     threads = config["Video"]["Threads"]
-    fileName = f"{script.title} #redditstories #reddit #redditposts"
-    fileName = fileName.replace("/", " or ")
     outputFile = f"{outputDir}/{fileName}.mp4"
+    if(final.duration >= 60):
+        final = final.subclip(0, 59) 
     final.write_videofile(
         outputFile, 
         codec = 'mpeg4',
@@ -91,61 +104,33 @@ def createVideo():
         bitrate = bitrate
     )
 
-    if final.duration > 60:
-        partOne = final.subclip(0, 59)
-        fileName = f"{script.title} part 1 #redditstories #reddit #redditposts"
-        outputFile = f"{outputDir}/{fileName}.mp4"
-        partOne.write_videofile(
-            outputFile, 
-            codec='mpeg4',
-            threads=threads, 
-            bitrate=bitrate
-        )
-        if final.duration > 120:
-            partTwo = final.subclip(60, 119)
-            fileName = f"{script.title} part 2 #redditstories #reddit #redditposts"
-            outputFile = f"{outputDir}/{fileName}.mp4"
-            partTwo.write_videofile(
-                outputFile, 
-                codec='mpeg4',
-                threads=threads, 
-                bitrate=bitrate
-            )
-            partThree = final.subclip(120, final.duration)
-            fileName = f"{script.title} part 3 #redditstories #reddit #redditposts"
-            outputFile = f"{outputDir}/{fileName}.mp4"
-            partThree.write_videofile(
-                outputFile, 
-                codec='mpeg4',
-                threads=threads, 
-                bitrate=bitrate
-            )
-        else:
-            partTwo = final.subclip(59, final.duration)
-            fileName = f"{script.title} part 2 #redditstories #reddit #redditposts"
-            outputFile = f"{outputDir}/{fileName}.mp4"
-            partTwo.write_videofile(
-                outputFile, 
-                codec='mpeg4',
-                threads=threads, 
-                bitrate=bitrate
-            )
-
     print(f"Video completed in {time.time() - startTime}")
-
-    """
-    # Preview in VLC for approval before uploading
-    if (config["General"].getboolean("PreviewBeforeUpload")):
-        vlcPath = config["General"]["VLCPath"]
-        p = subprocess.Popen([vlcPath, outputFile])
-        print("Waiting for video review. Type anything to continue")
-        wait = input()
-    """
-
     print("Video is ready to upload!")
     print(f"Title: {script.title}  File: {outputFile}")
-    endTime = time.time()
-    print(f"Total time: {endTime - startTime}")
+
+    description = "Engaging posts originating from all around Reddit! Make sure to check out my channel and subscribe for more awesome Reddit clips."
+    keywords = "reddit, redditpost, redditstories, redditstory, askreddit, aita, tifu"
+    category = "24"
+    privacy_status = "private"
+
+    # upload_video(outputFile, fileName, description, keywords, category, privacy_status)
+
+def upload_video(file, title, description, keywords, category, privacy_status):
+    command = [
+        "python3", "upload_video.py",
+        "--file", file,
+        "--title", title,
+        "--description", description,
+        "--keywords", keywords,
+        "--category", category,
+        "--privacyStatus", privacy_status
+    ]
+
+    result = subprocess.run(command, capture_output=True, text=True)
+
+    print(result.stdout)
+    if result.stderr:
+        print(result.stderr)
 
 if __name__ == "__main__":
     createVideo()

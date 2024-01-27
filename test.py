@@ -1,13 +1,28 @@
-from PIL import Image
+import subprocess
 
-def combine_images_vertically(image_path1, image_path2, output_path):
-    img1 = Image.open(image_path1)
-    img2 = Image.open(image_path2)
-    if img1.width != img2.width:
-        raise ValueError("Images must have the same width")
-    combined_image = Image.new('RGB', (img1.width, img1.height + img2.height))
-    combined_image.paste(img1, (0, 0))
-    combined_image.paste(img2, (0, img1.height))
-    combined_image.save(output_path)
+def upload_video(file, title, description, keywords, category, privacy_status):
+    command = [
+        "python3", "upload_video.py",
+        "--file", file,
+        "--title", title,
+        "--description", description,
+        "--keywords", keywords,
+        "--category", category,
+        "--privacyStatus", privacy_status
+    ]
 
-combine_images_vertically('image1.png', 'image2.png', 'image3.png')
+    result = subprocess.run(command, capture_output=True, text=True)
+
+    print(result.stdout)
+    if result.stderr:
+        print(result.stderr)
+
+
+file = "example.mp4"
+title = "aaaaaaaaaabbbbbbbbbbccccccccccddddddddddeeeeeeeeeeffffffffffgggggggggghhhhhhhhhhiiiiiiiiiijjjjjjjjjjkkkkk"
+description = "Engaging posts originating from all around Reddit! Make sure to check out my channel and subscribe for more awesome Reddit clips."
+keywords = "reddit, redditpost, redditstories, redditstory, askreddit, aita, tifu"
+category = "24"
+privacy_status = "private"
+
+upload_video(file, title, description, keywords, category, privacy_status)
