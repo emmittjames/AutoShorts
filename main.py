@@ -78,7 +78,7 @@ def createVideo():
     final = final.fx(vfx.speedx, 1.1) # Speed up video
 
     tags = ["#redditstories", "#reddit", "#redditposts"]
-    fileName = script.title
+    fileName = script.title + " "
     fileName = fileName.replace("/", " or ")
     if(len(fileName) > 100):
         fileName = fileName[:100]
