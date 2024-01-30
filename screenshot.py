@@ -8,8 +8,8 @@ import time, re
 
 # Config
 screenshotDir = "Screenshots"
-screenWidth = 770
-screenHeight = 800
+screenWidth = 768
+screenHeight = 2000
 
 def getPostScreenshots(filePrefix, script, postId, read_comments):
     print("Taking screenshots...")
@@ -121,8 +121,7 @@ def close_popup(driver, wait):
 
 def __setupDriver(url: str):
     options = webdriver.FirefoxOptions()
-    options.headless = False
-    options.enable_mobile = False
+    options.add_argument("--headless")
     driver = webdriver.Firefox(options=options)
     wait = WebDriverWait(driver, 10)
 
