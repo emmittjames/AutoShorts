@@ -1,9 +1,9 @@
 from moviepy.editor import *
-import reddit, screenshot, time, subprocess, random, configparser, sys, math, pyperclip
+import reddit, screenshot, time, subprocess, random, configparser, math, smtplib
 from os import listdir
 from os.path import isfile, join
 
-def createVideo():
+def createVideo(subreddit):
 
     config = configparser.ConfigParser()
     config.read('config.ini')
@@ -12,7 +12,7 @@ def createVideo():
     startTime = time.time()
 
     postOptionCount = int(config["Reddit"]["NumberOfPostsToSelectFrom"])
-    script, postId, read_comments = reddit.getContent(outputDir, postOptionCount)
+    script, postId, read_comments = reddit.getContent(outputDir, postOptionCount, subreddit)
 
     fileName = script.getFileName()
 
@@ -101,7 +101,7 @@ def createVideo():
         outputFile, 
         codec = 'mpeg4',
         threads = threads, 
-        bitrate = bitrate
+        bitrate = bitrate,
     )
 
     print(f"Video completed in {time.time() - startTime}")
@@ -132,17 +132,30 @@ def upload_video(file, title, description, keywords, category, privacy_status):
     if result.stderr:
         print(result.stderr)
 
-"""
-import smtplib, ssl
-from email.message import EmailMessage
 
-def send_email():
-    msg = EmailMessage()
-    msg.set_content("this is a test email")
-    msg['Subject'] = "Test email"
-    msg['From'] = me
-    msg['To'] = you
-"""
+def send_email(subject, message):
+    config = configparser.ConfigParser()
+    config.read('config.ini')
+    sender_email = config["Email"]["SenderEmail"]
+    sender_password = config["Email"]["SenderPassword"]
+    recipient_email = config["Email"]["RecipientEmail"]
+    smtp_server = 'smtp.gmail.com'
+    smtp_port = 587
+    with smtplib.SMTP(smtp_server, smtp_port) as server:
+        server.starttls() 
+        server.login(sender_email, sender_password)
+        email_content = f'Subject: {subject}\n\n{message}'
+        server.sendmail(sender_email, recipient_email, email_content)
 
 if __name__ == "__main__":
-    createVideo()
+    for i in range(10):
+        try:
+            createVideo("askreddit")
+            break
+        except Exception as e:
+            print(e)
+            if i == 9:
+                send_email("Error in autoshorts", e)
+                raise e
+            else:
+                time.sleep(5)

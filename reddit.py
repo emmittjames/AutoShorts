@@ -1,10 +1,5 @@
-import os
-import re
-import praw
-import markdown_to_text
-import time
+import os, re, praw, markdown_to_text, time, configparser, random
 from videoscript import VideoScript
-import configparser
 
 config = configparser.ConfigParser()
 config.read('config.ini')
@@ -13,7 +8,7 @@ CLIENT_SECRET = config["Reddit"]["CLIENT_SECRET"]
 USER_AGENT = config["Reddit"]["USER_AGENT"]
 # SUBREDDIT = config["Reddit"]["SUBREDDIT"]
 
-def getContent(outputDir, postOptionCount) -> VideoScript:
+def getContent(outputDir, postOptionCount, subreddit) -> VideoScript:
     reddit = __getReddit()
     existingPostIds = __getExistingPostIds(outputDir)
 
@@ -29,7 +24,12 @@ def getContent(outputDir, postOptionCount) -> VideoScript:
     }
     for key, value in subreddit_mapping.items():
         print(f"[{key}] {value}")
-    SUBREDDIT = subreddit_mapping[int(input("Input: "))]
+    # SUBREDDIT = subreddit_mapping[int(input("Input: "))]
+    if(subreddit == "askreddit"):
+        SUBREDDIT = subreddit_mapping[0]
+    else:
+        random_number = random.randint(1, 3)
+        SUBREDDIT = subreddit_mapping[random_number]
 
     if SUBREDDIT == "amitheasshole" or SUBREDDIT == "offmychest" or SUBREDDIT == "tifu":
         read_comments = False
@@ -41,14 +41,15 @@ def getContent(outputDir, postOptionCount) -> VideoScript:
         paragraph_count = submission.selftext.count('\n') + 1
         word_count = len(submission.selftext.split())
         word_to_paragraph_ratio = word_count / paragraph_count
-        if (word_count > 250 or word_to_paragraph_ratio>70):
+        if (word_count > 250 or word_to_paragraph_ratio>70 or submission.score<100):
             continue
         print(f"[{len(posts)}] {submission.title} | Word Count: {word_count} | Paragraph Count: {paragraph_count} | Upvotes: {submission.score} | {'{:.1f}'.format(hoursAgoPosted)} hours ago")
         posts.append(submission)
         if (len(posts) >= postOptionCount):
             break
 
-    postSelection = int(input("Input: "))
+    # postSelection = int(input("Input: "))
+    postSelection = random.randint(0, len(posts)-1)
     selectedPost = posts[postSelection]
     return __getContentFromPost(selectedPost, read_comments), selectedPost.id, read_comments
 
