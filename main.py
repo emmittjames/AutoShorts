@@ -111,9 +111,9 @@ def createVideo(subreddit):
     description = "Engaging posts originating from all around Reddit! Make sure to check out my channel and subscribe for more awesome Reddit clips."
     keywords = "reddit, redditpost, redditstories, redditstory, askreddit, aita, tifu"
     category = "24"
-    privacy_status = "private"
+    privacy_status = "public"
 
-    # upload_video(outputFile, fileName, description, keywords, category, privacy_status)
+    upload_video(outputFile, fileName, description, keywords, category, privacy_status)
 
 def upload_video(file, title, description, keywords, category, privacy_status):
     command = [
