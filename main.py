@@ -1,5 +1,5 @@
 from moviepy.editor import *
-import reddit, screenshot, time, subprocess, random, configparser, math, smtplib
+import reddit, screenshot, time, subprocess, random, configparser, math, smtplib, argparse
 from os import listdir
 from os.path import isfile, join
 
@@ -148,14 +148,26 @@ def send_email(subject, message):
         server.sendmail(sender_email, recipient_email, email_content)
 
 if __name__ == "__main__":
-    for i in range(10):
+    command = [
+        "python3", "clear.py"
+    ]
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-s', action='store_true')
+    args = parser.parse_args()
+    if args.s:
+        subreddit = "story"
+    else:
+        subreddit = "askreddit"
+    for i in range(15):
         try:
-            createVideo("askreddit")
+            createVideo(subreddit)
             break
         except Exception as e:
             print(e)
-            if i == 9:
-                send_email("Error in autoshorts", e)
+            if i == 14:
+                send_email("Error in autoshorts", f"askreddit post\n{e}")
+                subprocess.run(command, capture_output=True, text=True)
                 raise e
             else:
-                time.sleep(5)
+                time.sleep(1)
+    subprocess.run(command, capture_output=True, text=True)

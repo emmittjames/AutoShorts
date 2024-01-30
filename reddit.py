@@ -19,8 +19,8 @@ def getContent(outputDir, postOptionCount, subreddit) -> VideoScript:
     subreddit_mapping = {
         0: "askreddit",
         1: "amitheasshole",
-        2: "offmychest",
-        3: "tifu",
+        2: "tifu",
+        3: "offmychest",
     }
     for key, value in subreddit_mapping.items():
         print(f"[{key}] {value}")
