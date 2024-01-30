@@ -132,5 +132,17 @@ def upload_video(file, title, description, keywords, category, privacy_status):
     if result.stderr:
         print(result.stderr)
 
+"""
+import smtplib, ssl
+from email.message import EmailMessage
+
+def send_email():
+    msg = EmailMessage()
+    msg.set_content("this is a test email")
+    msg['Subject'] = "Test email"
+    msg['From'] = me
+    msg['To'] = you
+"""
+
 if __name__ == "__main__":
     createVideo()

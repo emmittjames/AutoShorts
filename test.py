@@ -1,28 +1,21 @@
-import subprocess
+import smtplib, configparser
 
-def upload_video(file, title, description, keywords, category, privacy_status):
-    command = [
-        "python3", "upload_video.py",
-        "--file", file,
-        "--title", title,
-        "--description", description,
-        "--keywords", keywords,
-        "--category", category,
-        "--privacyStatus", privacy_status
-    ]
+def send_email(sender_email, sender_password, recipient_email, subject, message):
+    smtp_server = 'smtp.gmail.com'
+    smtp_port = 587
+    with smtplib.SMTP(smtp_server, smtp_port) as server:
+        server.starttls()  # Start TLS encryption
+        server.login(sender_email, sender_password)
+        email_content = f'Subject: {subject}\n\n{message}'
+        server.sendmail(sender_email, recipient_email, email_content)
 
-    result = subprocess.run(command, capture_output=True, text=True)
+# Example usage
+config = configparser.ConfigParser()
+config.read('config.ini')
+sender_email = config["Email"]["SenderEmail"]
+sender_password = config["Email"]["SenderPassword"]
+recipient_email = config["Email"]["RecipientEmail"]
+subject = 'Test Email'
+message = 'This is a test email sent from Python using Gmail SMTP.'
 
-    print(result.stdout)
-    if result.stderr:
-        print(result.stderr)
-
-
-file = "example.mp4"
-title = "aaaaaaaaaabbbbbbbbbbccccccccccddddddddddeeeeeeeeeeffffffffffgggggggggghhhhhhhhhhiiiiiiiiiijjjjjjjjjjkkkkk"
-description = "Engaging posts originating from all around Reddit! Make sure to check out my channel and subscribe for more awesome Reddit clips."
-keywords = "reddit, redditpost, redditstories, redditstory, askreddit, aita, tifu"
-category = "24"
-privacy_status = "private"
-
-upload_video(file, title, description, keywords, category, privacy_status)
+send_email(sender_email, sender_password, recipient_email, subject, message)
