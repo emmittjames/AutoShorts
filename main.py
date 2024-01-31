@@ -64,6 +64,12 @@ def createVideo():
     for comment in script.frames:
         clips.append(__createClip(comment.screenShotFile, comment.audioClip, marginSize))
 
+    new_clips = []
+    for i, clip in enumerate(clips):
+        shaved_clip = clip.subclip(0, clip.duration - 0.1)
+        new_clips.append(shaved_clip)
+    clips = new_clips
+
     # Merge clips into single track
     contentOverlay = concatenate_videoclips(clips).set_position(("center", "center"))
 
@@ -101,7 +107,7 @@ def createVideo():
         outputFile, 
         codec = 'mpeg4',
         threads = threads, 
-        bitrate = bitrate
+        bitrate = bitrate,
     )
 
     print(f"Video completed in {time.time() - startTime}")
