@@ -26,7 +26,10 @@ def getPostScreenshots(filePrefix, script, postId, read_comments):
             commentFrame.screenShotFile = __takeScreenshot(filePrefix, driver, wait, f"t1_{commentFrame.commentId}")
     else:
         script.titleSCFile = __takeStoryScreenshotsTitle(filePrefix, driver, wait, postId=postId)
-        driver.find_element(By.ID, f"t3_{postId}-read-more-button").click()
+        try:
+            driver.find_element(By.ID, f"t3_{postId}-read-more-button").click()
+        except:
+            print("Read more button not found")
         for commentFrame in script.frames:
             paragraphNum = int(re.search(r'\d+$', commentFrame.commentId).group()) # get last number in the paragraph string
             commentFrame.screenShotFile = __takeStoryScreenshots(filePrefix, driver, wait, postId=postId, paragraphNum=paragraphNum)
