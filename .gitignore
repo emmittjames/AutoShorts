@@ -13,3 +13,4 @@ config.ini
 .DS_Store
 *.mp4
 *.json
+*.pem
