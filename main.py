@@ -21,7 +21,8 @@ def createVideo(subreddit):
 
 
     # Setup background clip
-    bgDir = config["General"]["BackgroundDirectory"]
+    # bgDir = config["General"]["BackgroundDirectory"]
+    bgDir = "BackgroundVideosHosting"
     bgPrefix = config["General"]["BackgroundFilePrefix"]
     bgFiles = [f for f in listdir(bgDir) if isfile(join(bgDir, f)) and f.lower().endswith('.mp4')]
     bgCount = len(bgFiles)
