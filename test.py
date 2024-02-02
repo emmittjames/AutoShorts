@@ -4,12 +4,11 @@ def send_email(sender_email, sender_password, recipient_email, subject, message)
     smtp_server = 'smtp.gmail.com'
     smtp_port = 587
     with smtplib.SMTP(smtp_server, smtp_port) as server:
-        server.starttls()  # Start TLS encryption
+        server.starttls()
         server.login(sender_email, sender_password)
         email_content = f'Subject: {subject}\n\n{message}'
         server.sendmail(sender_email, recipient_email, email_content)
 
-# Example usage
 config = configparser.ConfigParser()
 config.read('config.ini')
 sender_email = config["Email"]["SenderEmail"]
