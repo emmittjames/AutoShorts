@@ -155,9 +155,6 @@ def send_email(subject, message):
         server.sendmail(sender_email, recipient_email, email_content)
 
 if __name__ == "__main__":
-    command = [
-        "python3", "clear.py"
-    ]
     parser = argparse.ArgumentParser()
     parser.add_argument('-s', action='store_true')
     args = parser.parse_args()
@@ -177,4 +174,7 @@ if __name__ == "__main__":
                 raise e
             else:
                 time.sleep(1)
-    subprocess.run(command, capture_output=True, text=True)
+    clear_command = [
+        "python3", "clear.py"
+    ]
+    subprocess.run(clear_command, capture_output=True, text=True)
