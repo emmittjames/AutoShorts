@@ -1,5 +1,5 @@
 __pycache__/*
-BackgroundVideos/*
+# BackgroundVideos/*
 OutputVideos/*
 Screenshots/*
 Voiceovers/*
@@ -11,6 +11,6 @@ client_secrets.json
 geckodriver.log
 config.ini
 .DS_Store
-*.mp4
+# *.mp4
 *.json
 *.pem
