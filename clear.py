@@ -21,6 +21,14 @@ def clear_files_in_subdirectories(subdirectories):
                 except Exception as e:
                     print(f"Error deleting {file_path}: {e}")
 
+    mp3_files = glob.glob(os.path.join(current_directory, '*.mp3'))
+    for file_path in mp3_files:
+        try:
+            os.remove(file_path)
+            print(f"Deleted: {file_path}")
+        except Exception as e:
+            print(f"Error deleting {file_path}: {e}")
+
 subdirectories = ["Voiceovers", "Scripts", "Screenshots", "OutputVideos"]
 
 clear_files_in_subdirectories(subdirectories)
