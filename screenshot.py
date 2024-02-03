@@ -125,14 +125,20 @@ def close_popup(driver, wait):
             print("Couldn't close popup")
 
 def __setupDriver(url: str):
+    print("a")
     options = webdriver.FirefoxOptions()
     options.add_argument("--headless")
     options.headless = True
+    print("b")
     driver = webdriver.Firefox(options=options)
+    print("c")
     wait = WebDriverWait(driver, 10)
+    print("d")
 
     driver.set_window_size(width=screenWidth, height=screenHeight)
+    print("e")
 
     driver.get(url)
+    print("f")
 
     return driver, wait
