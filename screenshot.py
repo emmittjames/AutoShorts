@@ -128,6 +128,7 @@ def __setupDriver(url: str):
     print("a")
     options = webdriver.FirefoxOptions()
     options.add_argument("--headless")
+    options.add_argument('--disable-gpu')
     options.headless = True
     print("b")
     driver = webdriver.Firefox(options=options)
