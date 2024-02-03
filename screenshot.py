@@ -6,6 +6,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import NoSuchElementException
 from PIL import Image
 import time, re
+from pyvirtualdisplay import Display
 
 # Config
 screenshotDir = "Screenshots"
@@ -14,7 +15,7 @@ screenHeight = 2000
 
 def getPostScreenshots(filePrefix, script, postId, read_comments):
     print("Taking screenshots...")
-    driver, wait = __setupDriver(script.url)
+    driver, display, wait = __setupDriver(script.url)
     print("Driver setup complete")
     driver.switch_to.window(driver.window_handles[0])
     close_popup(driver, wait)
@@ -35,6 +36,7 @@ def getPostScreenshots(filePrefix, script, postId, read_comments):
             paragraphNum = int(re.search(r'\d+$', commentFrame.commentId).group()) # get last number in the paragraph string
             commentFrame.screenShotFile = __takeStoryScreenshots(filePrefix, driver, wait, postId=postId, paragraphNum=paragraphNum)
     driver.quit()
+    display.stop()
 
 def __takeScreenshot(filePrefix, driver, wait, handle="Post", postId=""):
     if(handle == "Post"):
@@ -125,6 +127,8 @@ def close_popup(driver, wait):
             print("Couldn't close popup")
 
 def __setupDriver(url: str):
+    display = Display(visible=0, size=(800, 600))
+    display.start()
     print("a")
     options = webdriver.FirefoxOptions()
     options.add_argument("--headless")
@@ -142,4 +146,4 @@ def __setupDriver(url: str):
     driver.get(url)
     print("f")
 
-    return driver, wait
+    return driver, display, wait
