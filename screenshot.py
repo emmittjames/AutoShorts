@@ -5,7 +5,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import NoSuchElementException
 from PIL import Image
-import time, re, logging
+import time, re
 
 # Config
 screenshotDir = "Screenshots"
@@ -124,10 +124,6 @@ def close_popup(driver, wait):
             raise NoSuchElementException("Couldn't close popup")
 
 def __setupDriver(url: str):
-    logging.basicConfig()
-    logger = logging.getLogger('selenium.webdriver')
-    logger.setLevel(logging.DEBUG)
-
     options = webdriver.FirefoxOptions()
     options.add_argument("--headless")
     options.headless = True
