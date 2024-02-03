@@ -1,4 +1,5 @@
 from selenium import webdriver
+from webdriver_manager.firefox import GeckoDriverManager
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
@@ -125,6 +126,7 @@ def close_popup(driver, wait):
 def __setupDriver(url: str):
     options = webdriver.FirefoxOptions()
     options.add_argument("--headless")
+    options.headless = True
     driver = webdriver.Firefox(options=options)
     wait = WebDriverWait(driver, 10)
 
