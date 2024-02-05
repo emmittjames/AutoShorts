@@ -121,15 +121,15 @@ def close_popup(driver, wait):
         time.sleep(20)
         if tries == max_tries - 1:
             # time.sleep(5)
-            raise NoSuchElementException("Couldn't close popup")
-            # print("Couldn't close popup")
+            # raise NoSuchElementException("Couldn't close popup")
+            print("Couldn't close popup")
 
 def __setupDriver(url: str):
     display = Display(visible=0, size=(1440, 900))
     display.start()
     print("Virtual display started")
     options = webdriver.FirefoxOptions()
-    options.add_argument("--headless")
+    options.add_argument("--headless=new")
     options.add_argument('--disable-gpu')
     options.headless = True
     driver = webdriver.Firefox(options=options)
@@ -139,5 +139,8 @@ def __setupDriver(url: str):
     driver.maximize_window()
     driver.get(url)
     print("URL opened")
+    time.sleep(5)
+    driver.save_screenshot("screenshot.png")
+    print("Screenshot saved")
 
     return driver, display, wait
