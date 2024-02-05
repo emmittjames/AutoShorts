@@ -118,7 +118,7 @@ def close_popup(driver, wait):
                 print(f"Error in iframe {iframe}")
                 driver.switch_to.default_content()
         print("No Google popup found | tries:", tries)
-        time.wait(20)
+        time.sleep(20)
         if tries == max_tries - 1:
             # time.sleep(5)
             raise NoSuchElementException("Couldn't close popup")
