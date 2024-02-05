@@ -42,9 +42,6 @@ def __takeScreenshot(filePrefix, driver, wait, handle="Post", postId=""):
     if(handle == "Post"):
         close_popup(driver, wait)
         driver.switch_to.default_content()
-
-        # search = wait.until(EC.presence_of_element_located((By.ID, 't3_' + postId)))
-        # search = driver.find_element(By.ID, 't3_' + postId)
         search = driver.find_element(By.ID, f"t3_{postId}")
     else:
         search = driver.find_element(By.CSS_SELECTOR, f"[thingid='{handle}']")
@@ -123,11 +120,11 @@ def close_popup(driver, wait):
         print("No Google popup found | tries:", tries)
         if tries == max_tries - 1:
             # time.sleep(5)
-            # raise NoSuchElementException("Couldn't close popup")
-            print("Couldn't close popup")
+            raise NoSuchElementException("Couldn't close popup")
+            # print("Couldn't close popup")
 
 def __setupDriver(url: str):
-    display = Display(visible=0, size=(800, 600))
+    display = Display(visible=0, size=(1440, 900))
     display.start()
     print("Virtual display started")
     options = webdriver.FirefoxOptions()
