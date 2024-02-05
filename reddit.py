@@ -11,7 +11,6 @@ config.read('config.ini')
 CLIENT_ID = config["Reddit"]["CLIENT_ID"]
 CLIENT_SECRET = config["Reddit"]["CLIENT_SECRET"]
 USER_AGENT = config["Reddit"]["USER_AGENT"]
-# SUBREDDIT = config["Reddit"]["SUBREDDIT"]
 
 def getContent(outputDir, postOptionCount) -> VideoScript:
     reddit = __getReddit()

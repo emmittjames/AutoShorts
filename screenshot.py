@@ -6,7 +6,6 @@ from selenium.common.exceptions import NoSuchElementException
 from PIL import Image
 import time, re
 
-# Config
 screenshotDir = "Screenshots"
 screenWidth = 768
 screenHeight = 2000

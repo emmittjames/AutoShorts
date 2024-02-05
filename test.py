@@ -1,28 +1,12 @@
-import subprocess
+from pathlib import Path
+from openai import OpenAI
+client = OpenAI()
 
-def upload_video(file, title, description, keywords, category, privacy_status):
-    command = [
-        "python3", "upload_video.py",
-        "--file", file,
-        "--title", title,
-        "--description", description,
-        "--keywords", keywords,
-        "--category", category,
-        "--privacyStatus", privacy_status
-    ]
+speech_file_path = Path(__file__).parent / "speech.mp3"
+response = client.audio.speech.create(
+    model="tts-1",
+    voice="alloy",
+    input="Today is a wonderful day to build something people love!"
+)
 
-    result = subprocess.run(command, capture_output=True, text=True)
-
-    print(result.stdout)
-    if result.stderr:
-        print(result.stderr)
-
-
-file = "example.mp4"
-title = "aaaaaaaaaabbbbbbbbbbccccccccccddddddddddeeeeeeeeeeffffffffffgggggggggghhhhhhhhhhiiiiiiiiiijjjjjjjjjjkkkkk"
-description = "Engaging posts originating from all around Reddit! Make sure to check out my channel and subscribe for more awesome Reddit clips."
-keywords = "reddit, redditpost, redditstories, redditstory, askreddit, aita, tifu"
-category = "24"
-privacy_status = "private"
-
-upload_video(file, title, description, keywords, category, privacy_status)
+response.stream_to_file(speech_file_path)
