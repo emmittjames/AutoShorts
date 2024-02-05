@@ -36,13 +36,14 @@ def createVideo():
     
     backgroundVideo = backgroundVideo.subclip(background_video_start_time, background_video_start_time + script.getDuration())
 
-    w, h = backgroundVideo.size
+    # w, h = backgroundVideo.size
 
     # Set the desired aspect ratio (9:16)
     desired_aspect_ratio = 9 / 16
 
     # Calculate the width based on the background's height
-    bg_height = backgroundVideo.size[1]
+    # bg_height = backgroundVideo.size[1]
+    bg_height = 1080
     desired_width = int(bg_height * desired_aspect_ratio)
 
     def __createClip(screenShotFile, audioClip, marginSize):
@@ -81,7 +82,7 @@ def createVideo():
     final.duration = script.getDuration()
     final.set_fps(backgroundVideo.fps)
 
-    final = final.fx(vfx.speedx, 1.1) # Speed up video
+    final = final.fx(vfx.speedx, 1.05) # Speed up video
 
     tags = ["#redditstories", "#reddit", "#redditposts"]
     fileName = script.title
