@@ -129,21 +129,16 @@ def close_popup(driver, wait):
 def __setupDriver(url: str):
     display = Display(visible=0, size=(800, 600))
     display.start()
-    print("a")
+    print("Virtual display started")
     options = webdriver.FirefoxOptions()
     options.add_argument("--headless")
     options.add_argument('--disable-gpu')
     options.headless = True
-    print("b")
     driver = webdriver.Firefox(options=options)
-    print("c")
+    print("Driver initialized")
     wait = WebDriverWait(driver, 10)
-    print("d")
-
     driver.set_window_size(width=screenWidth, height=screenHeight)
-    print("e")
-
     driver.get(url)
-    print("f")
+    print("URL opened")
 
     return driver, display, wait
