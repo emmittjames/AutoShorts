@@ -123,7 +123,7 @@ def close_popup(driver, wait):
         print("No Google popup found | tries:", tries)
         if tries == max_tries - 1:
             # time.sleep(5)
-            raise NoSuchElementException("Couldn't close popup")
+            # raise NoSuchElementException("Couldn't close popup")
             print("Couldn't close popup")
 
 def __setupDriver(url: str):
