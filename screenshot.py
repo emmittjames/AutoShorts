@@ -140,6 +140,8 @@ def __setupDriver(url: str):
     driver.get(url)
     print("URL opened")
     time.sleep(5)
+    current_url = driver.current_url
+    print(f"Current URL: {current_url}")
     driver.save_screenshot("screenshot.png")
     print("Screenshot saved")
 
