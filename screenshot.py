@@ -118,6 +118,7 @@ def close_popup(driver, wait):
                 print(f"Error in iframe {iframe}")
                 driver.switch_to.default_content()
         print("No Google popup found | tries:", tries)
+        time.wait(20)
         if tries == max_tries - 1:
             # time.sleep(5)
             raise NoSuchElementException("Couldn't close popup")
@@ -134,7 +135,8 @@ def __setupDriver(url: str):
     driver = webdriver.Firefox(options=options)
     print("Driver initialized")
     wait = WebDriverWait(driver, 10)
-    driver.set_window_size(width=screenWidth, height=screenHeight)
+    # driver.set_window_size(width=screenWidth, height=screenHeight)
+    driver.maximize_window()
     driver.get(url)
     print("URL opened")
 
