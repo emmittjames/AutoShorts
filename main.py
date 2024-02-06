@@ -32,18 +32,17 @@ def createVideo():
         filename=join(bgDir, bgFiles[bgIndex]),
         audio=False)
     
-    background_video_start_time = random.randint(0, math.floor(backgroundVideo.duration - script.getDuration()) - 30)
+    background_video_start_time = random.randint(0, math.floor(backgroundVideo.duration - script.getDuration()) - 1)
     
     backgroundVideo = backgroundVideo.subclip(background_video_start_time, background_video_start_time + script.getDuration())
 
-    # w, h = backgroundVideo.size
+    w, h = backgroundVideo.size
 
     # Set the desired aspect ratio (9:16)
     desired_aspect_ratio = 9 / 16
 
     # Calculate the width based on the background's height
-    # bg_height = backgroundVideo.size[1]
-    bg_height = 1080
+    bg_height = backgroundVideo.size[1]
     desired_width = int(bg_height * desired_aspect_ratio)
 
     def __createClip(screenShotFile, audioClip, marginSize):
