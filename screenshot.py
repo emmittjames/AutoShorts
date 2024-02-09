@@ -6,7 +6,6 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import NoSuchElementException
 from PIL import Image
 import time, re
-from pyvirtualdisplay import Display
 
 # Config
 screenshotDir = "Screenshots"
@@ -15,7 +14,7 @@ screenHeight = 2000
 
 def getPostScreenshots(filePrefix, script, postId, read_comments):
     print("Taking screenshots...")
-    driver, display, wait = __setupDriver(script.url)
+    driver, wait = __setupDriver(script.url)
     print("Driver setup complete")
     driver.switch_to.window(driver.window_handles[0])
     close_popup(driver, wait)
@@ -36,7 +35,6 @@ def getPostScreenshots(filePrefix, script, postId, read_comments):
             paragraphNum = int(re.search(r'\d+$', commentFrame.commentId).group()) # get last number in the paragraph string
             commentFrame.screenShotFile = __takeStoryScreenshots(filePrefix, driver, wait, postId=postId, paragraphNum=paragraphNum)
     driver.quit()
-    display.stop()
 
 def __takeScreenshot(filePrefix, driver, wait, handle="Post", postId=""):
     if(handle == "Post"):
@@ -125,9 +123,6 @@ def close_popup(driver, wait):
             print("Couldn't close popup")
 
 def __setupDriver(url: str):
-    display = Display(visible=0, size=(1440, 900))
-    display.start()
-    print("Virtual display started")
     options = webdriver.FirefoxOptions()
     options.add_argument("--headless=new")
     options.add_argument('--disable-gpu')
@@ -145,4 +140,4 @@ def __setupDriver(url: str):
     driver.save_screenshot("screenshot.png")
     print("Screenshot saved")
 
-    return driver, display, wait
+    return driver, wait
