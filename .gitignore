@@ -14,3 +14,4 @@ config.ini
 *.mp4
 *.json
 *.pem
+.venv/
