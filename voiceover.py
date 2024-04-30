@@ -33,7 +33,7 @@ def create_voice_over(fileName, script_path, special=False, read_comments=True):
     file_path = f"{voiceoverDir}/{fileName}.mp3"
 
     command = [
-        'python3',
+        'python',
         'tiktok_tts.py',
         '-v', voice,
         '-f', script_path,
