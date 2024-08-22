@@ -1,49 +1,45 @@
-import random, subprocess
+import configparser
+import boto3
+from botocore.exceptions import BotoCoreError, ClientError
+from contextlib import closing
+import sys
 
-voiceoverDir = "Voiceovers"
-
-voices = [  
-            'en_au_001', 'en_au_002', 'en_uk_001', 'en_uk_003', 'en_us_001', 'en_us_006', 'en_us_007', 'en_us_009', 'en_us_010', 
-            'en_male_funny'
-        ]
-
-special_voices = ['en_male_pirate', 'en_female_madam_leota', 'en_us_rocket']
-
-story_voices = ['en_us_006']
+def read_text_file(file_path):
+    with open(file_path, 'r') as file:
+        text = file.read()
+    return text
 
 def create_voice_over(fileName, script_path, special=False, read_comments=True):
-    global special_voices, voices
-    if read_comments:
-        if (special and len(special_voices) > 0 and random.random() < 0.5):
-            voice = random.choice(special_voices)
-            special_voices.remove(voice)
-            if(special_voices == []):
-                special_voices = ['en_male_pirate', 'en_female_madam_leota']
-        else:
-            voice = random.choice(voices)
-            voices.remove(voice)
-            if(voices == []):
-                voices = [  
-                    'en_au_001', 'en_au_002', 'en_uk_001', 'en_uk_003', 'en_us_001', 'en_us_006', 'en_us_007', 'en_us_009', 'en_us_010', 
-                    'en_male_funny', 'en_us_rocket'
-                ]
+    file_path = f"Voiceovers/{fileName}.mp3"
+    config = configparser.ConfigParser()
+    config.read('config.ini')
+    aws_access_key_id = config.get('AWS', 'aws_access_key_id')
+    aws_secret_access_key = config.get('AWS', 'aws_secret_access_key')
+
+    session = boto3.Session(
+        aws_access_key_id=aws_access_key_id,
+        aws_secret_access_key=aws_secret_access_key,
+        region_name='us-east-1'
+    )
+
+    polly = session.client("polly")
+
+    try:
+        response = polly.synthesize_speech(Text=read_text_file(script_path), 
+                                           OutputFormat="mp3", VoiceId="Stephen", Engine="neural")
+    except (BotoCoreError, ClientError) as error:
+        print(error)
+        sys.exit(-1)
+
+    if "AudioStream" in response:
+        with closing(response["AudioStream"]) as stream:
+            try:
+                with open(file_path, "wb") as file:
+                    file.write(stream.read())
+            except IOError as error:
+                print(error)
+                sys.exit(-1)
+        return file_path
     else:
-        voice = random.choice(story_voices)
-
-    file_path = f"{voiceoverDir}/{fileName}.mp3"
-
-    command = [
-        'python',
-        'tiktok_tts.py',
-        '-v', voice,
-        '-f', script_path,
-        '-n', file_path,
-        '--session', '00453c9bbd7ea65b290bfa2656f7bd08',
-    ]
-
-    print("========================================COMMAND========================================")
-    print(" ".join(command))
-
-    subprocess.run(command)
-
-    return file_path
+        print("Could not stream audio")
+        sys.exit(-1)
