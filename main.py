@@ -81,8 +81,6 @@ def createVideo():
     final.duration = script.getDuration()
     final.set_fps(backgroundVideo.fps)
 
-    final = final.fx(vfx.speedx, 1.05) # Speed up video
-
     tags = ["#redditstories", "#reddit", "#redditposts"]
     fileName = script.title
     fileName = fileName.replace("/", " or ")

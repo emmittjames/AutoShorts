@@ -9,6 +9,18 @@ def read_text_file(file_path):
         text = file.read()
     return text
 
+def convert_to_ssml(text):
+    text_with_breaks = text.replace(',', f'<break time="20"/>')
+    text_with_breaks = text_with_breaks.replace('.', f'<break time="40"/>')
+    ssml_template = f"""
+    <speak>
+        <prosody rate="fast">
+            {text_with_breaks}
+        </prosody>
+    </speak>
+    """
+    return ssml_template.strip()
+
 def create_voice_over(fileName, script_path, special=False, read_comments=True):
     file_path = f"Voiceovers/{fileName}.mp3"
     config = configparser.ConfigParser()
@@ -24,9 +36,11 @@ def create_voice_over(fileName, script_path, special=False, read_comments=True):
 
     polly = session.client("polly")
 
+    text = read_text_file(script_path)
+    ssml_text = convert_to_ssml(text)
+
     try:
-        response = polly.synthesize_speech(Text=read_text_file(script_path), 
-                                           OutputFormat="mp3", VoiceId="Stephen", Engine="neural")
+        response = polly.synthesize_speech(Text=ssml_text, OutputFormat="mp3", VoiceId="Stephen", Engine="neural", TextType="ssml")
     except (BotoCoreError, ClientError) as error:
         print(error)
         sys.exit(-1)

@@ -25,12 +25,12 @@ session = boto3.Session(
 
 polly = session.client("polly")
 
-text = "Google Cloud Text-to-Speech enables developers to synthesize natural-sounding speech with 100+ voices"
+text = """<speak><prosody rate="fast">Google Cloud Text-to-Speech enables developers to synthesize natural-sounding speech with 100+ voices. </prosody></speak>"""
 
 try:
     # Request speech synthesis
     response = polly.synthesize_speech(Text=text, OutputFormat="mp3",
-                                        VoiceId="Stephen", Engine="neural")
+                                        VoiceId="Stephen", Engine="neural", TextType="ssml")
 except (BotoCoreError, ClientError) as error:
     # The service returned an error, exit gracefully
     print(error)
