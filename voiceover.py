@@ -10,8 +10,8 @@ def read_text_file(file_path):
     return text
 
 def convert_to_ssml(text):
-    text_with_breaks = text.replace(',', f'<break time="20"/>')
-    text_with_breaks = text_with_breaks.replace('.', f'<break time="40"/>')
+    text_with_breaks = text.replace(',', f'<break time="20ms"/>')
+    text_with_breaks = text.replace('.', f'<break time="40ms"/>')
     ssml_template = f"""
     <speak>
         <prosody rate="fast">
