@@ -41,6 +41,9 @@ def create_voice_over(fileName, script_path, special=False, read_comments=True):
         '--session', '00453c9bbd7ea65b290bfa2656f7bd08',
     ]
 
+    print("========================================COMMAND========================================")
+    print(" ".join(command))
+
     subprocess.run(command)
 
     return file_path

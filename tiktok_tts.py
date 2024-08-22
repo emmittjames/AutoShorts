@@ -120,6 +120,9 @@ def tts_batch(session_id: str, text_speaker: str = 'en_us_002', req_text: str = 
 
     r = requests.post(url, headers=headers)
 
+    print("ahhhhhhhhhhhhh", r)
+    print(r.json())
+
     if r.json()["message"] == "Couldn't load speech. Try again.":
         output_data = {"status": "Session ID is invalid", "status_code": 5}
         print(output_data)
