@@ -43,8 +43,8 @@ if "AudioStream" in response:
     # ensure the close method of the stream object will be called automatically
     # at the end of the with statement's scope.
         with closing(response["AudioStream"]) as stream:
-           voiceovers_dir = os.path.join(os.getcwd(), "Voiceovers")
-           output = os.path.join(voiceovers_dir, "speech.mp3")
+           fileName = "Asdfasdfv"
+           output = f"Voiceovers/{fileName}.mp3"
 
            try:
             # Open a file for writing the output as a binary stream
