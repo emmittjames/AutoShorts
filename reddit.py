@@ -1,4 +1,5 @@
 import os
+import random
 import re
 import praw
 import markdown_to_text
@@ -28,7 +29,12 @@ def getContent(outputDir, postOptionCount) -> VideoScript:
     }
     for key, value in subreddit_mapping.items():
         print(f"[{key}] {value}")
-    SUBREDDIT = subreddit_mapping[int(input("Input: "))]
+    # SUBREDDIT = subreddit_mapping[int(input("Input: "))]
+    population = [0, 1, 2, 3]
+    weights = [0.4, 0.2, 0.2, 0.2]
+    random_number = random.choices(population, weights)[0]
+    SUBREDDIT = subreddit_mapping[random_number]
+
 
     if SUBREDDIT == "amitheasshole" or SUBREDDIT == "offmychest" or SUBREDDIT == "tifu":
         read_comments = False
@@ -47,7 +53,8 @@ def getContent(outputDir, postOptionCount) -> VideoScript:
         if (len(posts) >= postOptionCount):
             break
 
-    postSelection = int(input("Input: "))
+    # postSelection = int(input("Input: "))
+    postSelection = random.randint(0, len(posts)-1)
     selectedPost = posts[postSelection]
     return __getContentFromPost(selectedPost, read_comments), selectedPost.id, read_comments
 
