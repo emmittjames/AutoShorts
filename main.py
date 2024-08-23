@@ -151,5 +151,5 @@ if __name__ == "__main__":
             createVideo(upload=args.upload)
             break
         except Exception as e:
-            print(e)
+            print(e, "\nSomething went wrong. Retrying in 5 seconds...")
             time.sleep(5)
