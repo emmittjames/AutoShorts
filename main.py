@@ -121,7 +121,6 @@ def createVideo(upload):
         upload_video(outputFile, fileName, description, keywords, category, privacy_status)
 
 def upload_video(file, title, description, keywords, category, privacy_status):
-    # Refresh the OAuth token before uploading
     subprocess.run(['python3', 'refresh_oauth_token.py'])
 
     upload_command = [
@@ -140,6 +139,8 @@ def upload_video(file, title, description, keywords, category, privacy_status):
     if result.stderr:
         print(result.stderr)
 
+    subprocess.run(['python3', 'clear.py'], capture_output=True, text=True)
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('-upload', action='store_true')
@@ -152,6 +153,3 @@ if __name__ == "__main__":
         except Exception as e:
             print(e)
             time.sleep(5)
-
-    if args.upload:
-        subprocess.run(['python3', 'clear.py'], capture_output=True, text=True)
