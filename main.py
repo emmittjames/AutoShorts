@@ -1,11 +1,10 @@
 import argparse
 from moviepy.editor import *
-import reddit, screenshot, time, subprocess, random, configparser, sys, math, pyperclip
+import reddit, screenshot, time, subprocess, random, configparser, math
 from os import listdir
 from os.path import isfile, join
 
-def createVideo(upload=False):
-
+def createVideo(upload):
     config = configparser.ConfigParser()
     config.read('config.ini')
     outputDir = config["General"]["OutputDirectory"]
@@ -122,7 +121,10 @@ def createVideo(upload=False):
         upload_video(outputFile, fileName, description, keywords, category, privacy_status)
 
 def upload_video(file, title, description, keywords, category, privacy_status):
-    command = [
+    # Refresh the OAuth token before uploading
+    subprocess.run(['python3', 'refresh_oauth_token.py'])
+
+    upload_command = [
         "python3", "upload_video.py",
         "--file", file,
         "--title", title,
@@ -132,7 +134,7 @@ def upload_video(file, title, description, keywords, category, privacy_status):
         "--privacyStatus", privacy_status
     ]
 
-    result = subprocess.run(command, capture_output=True, text=True)
+    result = subprocess.run(upload_command, capture_output=True, text=True)
 
     print(result.stdout)
     if result.stderr:
@@ -143,7 +145,13 @@ if __name__ == "__main__":
     parser.add_argument('-upload', action='store_true')
     args = parser.parse_args()
 
+    for i in range(10):
+        try:
+            createVideo(upload=args.upload)
+            break
+        except Exception as e:
+            print(e)
+            time.sleep(5)
+
     if args.upload:
-        createVideo(upload=True)
-    else:
-        createVideo()
+        subprocess.run(['python3', 'clear.py'], capture_output=True, text=True)
