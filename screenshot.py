@@ -1,7 +1,6 @@
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import NoSuchElementException
 from PIL import Image
 import time, re
@@ -118,17 +117,19 @@ def close_popup(driver, wait):
                 driver.switch_to.default_content()
         print("No Google popup found | tries:", tries)
         if tries == max_tries - 1:
-            # time.sleep(5)
-            raise NoSuchElementException("Couldn't close popup")
+            time.sleep(5)
+            # raise NoSuchElementException("Couldn't close popup")
+            print("Couldn't find any popup")
 
 def __setupDriver(url: str):
     options = webdriver.FirefoxOptions()
     options.add_argument("--headless")
-    driver = webdriver.Firefox(options=options)
+
+    # driver = webdriver.Firefox(options=options)
+    driver = webdriver.Remote(command_executor='http://localhost:4444/wd/hub', options=options)
+
     wait = WebDriverWait(driver, 10)
-
     driver.set_window_size(width=screenWidth, height=screenHeight)
-
     driver.get(url)
 
     return driver, wait
