@@ -1,9 +1,10 @@
+import argparse
 from moviepy.editor import *
 import reddit, screenshot, time, subprocess, random, configparser, sys, math, pyperclip
 from os import listdir
 from os.path import isfile, join
 
-def createVideo():
+def createVideo(upload=False):
 
     config = configparser.ConfigParser()
     config.read('config.ini')
@@ -115,9 +116,11 @@ def createVideo():
     description = "Engaging posts originating from all around Reddit! Make sure to check out my channel and subscribe for more awesome Reddit clips."
     keywords = "reddit, redditpost, redditstories, redditstory, askreddit, aita, tifu"
     category = "24"
-    privacy_status = "public"
+    # privacy_status = "public"
+    privacy_status = "private"
 
-    upload_video(outputFile, fileName, description, keywords, category, privacy_status)
+    if upload:
+        upload_video(outputFile, fileName, description, keywords, category, privacy_status)
 
 def upload_video(file, title, description, keywords, category, privacy_status):
     command = [
@@ -137,4 +140,11 @@ def upload_video(file, title, description, keywords, category, privacy_status):
         print(result.stderr)
 
 if __name__ == "__main__":
-    createVideo()
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-upload', action='store_true')
+    args = parser.parse_args()
+
+    if args.upload:
+        createVideo(upload=True)
+    else:
+        createVideo()
