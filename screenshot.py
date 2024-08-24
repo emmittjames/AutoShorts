@@ -11,35 +11,32 @@ screenHeight = 2000
 
 def getPostScreenshots(filePrefix, script, postId, read_comments):
     print("Taking screenshots...")
-    driver, wait = __setupDriver(script.url)
+    driver = __setupDriver(script.url)
     print("Driver setup complete")
     driver.switch_to.window(driver.window_handles[0])
-    close_popup(driver, wait)
+    # close_popup(driver)
     if read_comments:
-        script.titleSCFile = __takeScreenshot(filePrefix, driver, wait, handle="Post", postId=postId)
+        script.titleSCFile = __takeScreenshot(filePrefix, driver, handle="Post", postId=postId)
         time.sleep(1)
         driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
         time.sleep(1)
         for commentFrame in script.frames:
-            commentFrame.screenShotFile = __takeScreenshot(filePrefix, driver, wait, f"t1_{commentFrame.commentId}")
+            commentFrame.screenShotFile = __takeScreenshot(filePrefix, driver, f"t1_{commentFrame.commentId}")
     else:
-        script.titleSCFile = __takeStoryScreenshotsTitle(filePrefix, driver, wait, postId=postId)
+        script.titleSCFile = __takeStoryScreenshotsTitle(filePrefix, driver, postId=postId)
         try:
             driver.find_element(By.ID, f"t3_{postId}-read-more-button").click()
         except:
             print("Read more button not found")
         for commentFrame in script.frames:
             paragraphNum = int(re.search(r'\d+$', commentFrame.commentId).group()) # get last number in the paragraph string
-            commentFrame.screenShotFile = __takeStoryScreenshots(filePrefix, driver, wait, postId=postId, paragraphNum=paragraphNum)
+            commentFrame.screenShotFile = __takeStoryScreenshots(filePrefix, driver, postId=postId, paragraphNum=paragraphNum)
     driver.quit()
 
-def __takeScreenshot(filePrefix, driver, wait, handle="Post", postId=""):
+def __takeScreenshot(filePrefix, driver, handle="Post", postId=""):
     if(handle == "Post"):
-        close_popup(driver, wait)
+        # close_popup(driver)
         driver.switch_to.default_content()
-
-        # search = wait.until(EC.presence_of_element_located((By.ID, 't3_' + postId)))
-        # search = driver.find_element(By.ID, 't3_' + postId)
         search = driver.find_element(By.ID, f"t3_{postId}")
     else:
         search = driver.find_element(By.CSS_SELECTOR, f"[thingid='{handle}']")
@@ -56,8 +53,8 @@ def __takeScreenshot(filePrefix, driver, wait, handle="Post", postId=""):
     fp.close()
     return fileName
 
-def __takeStoryScreenshotsTitle(filePrefix, driver, wait, postId):
-    close_popup(driver, wait)
+def __takeStoryScreenshotsTitle(filePrefix, driver, postId):
+    # close_popup(driver)
     creditBar = driver.find_element(By.CSS_SELECTOR, f"[slot='credit-bar']")
     fileName1 = f"{screenshotDir}/{filePrefix}-creditBar.png"
     fp = open(fileName1, "wb")
@@ -75,7 +72,7 @@ def __takeStoryScreenshotsTitle(filePrefix, driver, wait, postId):
     
     return fileNameFinal
 
-def __takeStoryScreenshots(filePrefix, driver, wait, postId, paragraphNum):
+def __takeStoryScreenshots(filePrefix, driver, postId, paragraphNum):
     post_body = driver.find_element(By.ID, f"t3_{postId}-post-rtjson-content")
     paragraphs = post_body.find_elements(By.TAG_NAME, 'p')
     search = paragraphs[paragraphNum]
@@ -97,7 +94,7 @@ def combine_images_vertically(image_path1, image_path2, output_path):
     combined_image.paste(img2, (0, img1.height))
     combined_image.save(output_path)
 
-def close_popup(driver, wait):
+def close_popup(driver):
     max_tries = 5
     for tries in range(max_tries):
         driver.switch_to.window(driver.window_handles[0])
@@ -106,7 +103,6 @@ def close_popup(driver, wait):
         for iframe in all_iframes:
             try:
                 driver.switch_to.frame(iframe)
-                # popup_close_button = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, "[aria-label='Close']")))
                 popup_close_button = driver.find_element(By.CSS_SELECTOR, f"[aria-label='Close']")
                 popup_close_button.click()
                 print("Closed iframe")
@@ -118,7 +114,6 @@ def close_popup(driver, wait):
         print("No Google popup found | tries:", tries)
         if tries == max_tries - 1:
             time.sleep(5)
-            # raise NoSuchElementException("Couldn't close popup")
             print("Couldn't find any popup")
 
 def __setupDriver(url: str):
@@ -127,9 +122,9 @@ def __setupDriver(url: str):
 
     # driver = webdriver.Firefox(options=options)
     driver = webdriver.Remote(command_executor='http://localhost:4444/wd/hub', options=options)
+    # driver = webdriver.Remote(command_executor='http://firefox:4444/wd/hub', options=options)
 
-    wait = WebDriverWait(driver, 10)
     driver.set_window_size(width=screenWidth, height=screenHeight)
     driver.get(url)
 
-    return driver, wait
+    return driver
