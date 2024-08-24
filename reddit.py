@@ -30,10 +30,16 @@ def getContent(outputDir, postOptionCount) -> VideoScript:
     for key, value in subreddit_mapping.items():
         print(f"[{key}] {value}")
     # SUBREDDIT = subreddit_mapping[int(input("Input: "))]
-    population = [0, 1, 2, 3]
-    weights = [0.4, 0.2, 0.2, 0.2]
-    random_number = random.choices(population, weights)[0]
-    SUBREDDIT = subreddit_mapping[random_number]
+    tries = 0
+    while True:
+        population = [0, 1, 2, 3]
+        weights = [0.4, 0.2, 0.2, 0.2]
+        random_number = random.choices(population, weights)[0]
+        SUBREDDIT = subreddit_mapping[random_number]
+        number_of_posts = len(list(reddit.subreddit(SUBREDDIT).top(time_filter="day", limit=postOptionCount*3)))
+        if tries>10 or number_of_posts >= 1:
+            break
+        tries += 1
 
 
     if SUBREDDIT == "amitheasshole" or SUBREDDIT == "offmychest" or SUBREDDIT == "tifu":
