@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  firefox:
+    image: selenium/standalone-firefox:latest
+    container_name: "firefox"
+    hostname: firefox
+    shm_size: "2gb"
+    restart: always
+    ports:
+      - "4444:4444"
+      - "7900:7900"
+
+  autoshorts:
+    build: .
+    depends_on:
+      - firefox
