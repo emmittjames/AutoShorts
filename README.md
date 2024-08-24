@@ -11,9 +11,10 @@ This project is a short-form video generator, designed to automate the creation 
 ## Technologies
 Project created with:
 * Python
-* [TikTok TTS API](https://github.com/oscie57/tiktok-voice)
+* ~~[TikTok TTS API](https://github.com/oscie57/tiktok-voice)~~
+* [Amazon Polly](https://aws.amazon.com/polly/)
 * [PRAW](https://praw.readthedocs.io/en/stable/)
-* [Selenium](https://www.selenium.dev/)
+* [Selenium](https://www.selenium.dev/) via [Selenium Grid container for Firefox](https://hub.docker.com/r/selenium/standalone-firefox)
 * [YouTube Data API](https://developers.google.com/youtube/v3)
 
 Project hosted with: Raspberry Pi 5 running a Docker container of the project
