@@ -35,7 +35,7 @@ def getPostScreenshots(filePrefix, script, postId, read_comments):
 
 def __takeScreenshot(filePrefix, driver, handle="Post", postId=""):
     if(handle == "Post"):
-        # close_popup(driver)
+        close_popup(driver)
         driver.switch_to.default_content()
         search = driver.find_element(By.ID, f"t3_{postId}")
     else:
@@ -54,7 +54,7 @@ def __takeScreenshot(filePrefix, driver, handle="Post", postId=""):
     return fileName
 
 def __takeStoryScreenshotsTitle(filePrefix, driver, postId):
-    # close_popup(driver)
+    close_popup(driver)
     creditBar = driver.find_element(By.CSS_SELECTOR, f"[slot='credit-bar']")
     fileName1 = f"{screenshotDir}/{filePrefix}-creditBar.png"
     fp = open(fileName1, "wb")
