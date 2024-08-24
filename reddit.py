@@ -1,4 +1,5 @@
 import os
+import random
 import re
 import praw
 import markdown_to_text
@@ -28,7 +29,17 @@ def getContent(outputDir, postOptionCount) -> VideoScript:
     }
     for key, value in subreddit_mapping.items():
         print(f"[{key}] {value}")
-    SUBREDDIT = subreddit_mapping[int(input("Input: "))]
+    tries = 0
+    while True:
+        population = [0, 1, 2, 3]
+        weights = [0.4, 0.2, 0.2, 0.2]
+        random_number = random.choices(population, weights)[0]
+        SUBREDDIT = subreddit_mapping[random_number]
+        number_of_posts = len(list(reddit.subreddit(SUBREDDIT).top(time_filter="day", limit=postOptionCount*3)))
+        if tries>10 or number_of_posts >= 1:
+            break
+        tries += 1
+
 
     if SUBREDDIT == "amitheasshole" or SUBREDDIT == "offmychest" or SUBREDDIT == "tifu":
         read_comments = False
@@ -40,14 +51,14 @@ def getContent(outputDir, postOptionCount) -> VideoScript:
         paragraph_count = submission.selftext.count('\n') + 1
         word_count = len(submission.selftext.split())
         word_to_paragraph_ratio = word_count / paragraph_count
-        if (word_count > 240 or word_to_paragraph_ratio>70):
+        if (word_count > 240 or word_to_paragraph_ratio>70 or word_count < 100) and SUBREDDIT != "askreddit":
             continue
         print(f"[{len(posts)}] {submission.title} | Word Count: {word_count} | Paragraph Count: {paragraph_count} | Upvotes: {submission.score} | {'{:.1f}'.format(hoursAgoPosted)} hours ago")
         posts.append(submission)
         if (len(posts) >= postOptionCount):
             break
 
-    postSelection = int(input("Input: "))
+    postSelection = random.randint(0, len(posts)-1)
     selectedPost = posts[postSelection]
     return __getContentFromPost(selectedPost, read_comments), selectedPost.id, read_comments
 

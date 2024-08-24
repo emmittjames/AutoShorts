@@ -1,4 +1,5 @@
 import configparser
+import re
 import boto3
 from botocore.exceptions import BotoCoreError, ClientError
 from contextlib import closing
@@ -10,8 +11,8 @@ def read_text_file(file_path):
     return text
 
 def convert_to_ssml(text):
-    text_with_breaks = text.replace(',', f'<break time="20ms"/>')
-    text_with_breaks = text.replace('.', f'<break time="40ms"/>')
+    text_with_breaks = re.sub(r',+', '<break time="20ms"/>', text)
+    text_with_breaks = re.sub(r'\.+', '<break time="40ms"/>', text_with_breaks)
     ssml_template = f"""
     <speak>
         <prosody rate="fast">
