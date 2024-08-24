@@ -146,7 +146,7 @@ if __name__ == "__main__":
     parser.add_argument('-upload', action='store_true')
     args = parser.parse_args()
 
-    for i in range(10):
+    for i in range(5):
         try:
             createVideo(upload=args.upload)
             break
