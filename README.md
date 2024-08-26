@@ -20,4 +20,4 @@ Project created with:
 Project hosted with: Raspberry Pi 5 running a Docker container of the project
 
 ## Getting Started
-Start Selenium Grid container: `docker run -d -p 4444:4444 -p 7900:7900 --shm-size="2g" selenium/standalone-firefox:latest`
+Start Selenium Grid container: `docker run -d -p 4444:4444 -p 7900:7900 --shm-size="2g" --name selenium selenium/standalone-firefox:latest`
