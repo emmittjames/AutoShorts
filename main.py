@@ -3,6 +3,7 @@ from moviepy.editor import *
 import reddit, screenshot, time, subprocess, random, configparser, math
 from os import listdir
 from os.path import isfile, join
+import sys
 
 def createVideo(upload):
     config = configparser.ConfigParser()
@@ -146,10 +147,13 @@ if __name__ == "__main__":
     parser.add_argument('-upload', action='store_true')
     args = parser.parse_args()
 
-    for i in range(10):
+    for i in range(3):
         try:
+            raise ValueError("testing error")
             createVideo(upload=args.upload)
             break
         except Exception as e:
             print(e, "\nSomething went wrong. Retrying in 5 seconds...")
+            if i == 2:
+                sys.exit(1)
             time.sleep(5)

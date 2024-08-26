@@ -121,8 +121,8 @@ def __setupDriver(url: str):
     options.add_argument("--headless")
 
     # driver = webdriver.Firefox(options=options)
-    # driver = webdriver.Remote(command_executor='http://localhost:4444/wd/hub', options=options)
-    driver = webdriver.Remote(command_executor='http://firefox:4444/wd/hub', options=options)
+    driver = webdriver.Remote(command_executor='http://localhost:4444/wd/hub', options=options)
+    # driver = webdriver.Remote(command_executor='http://firefox:4444/wd/hub', options=options)
 
     driver.set_window_size(width=screenWidth, height=screenHeight)
     driver.get(url)

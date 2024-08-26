@@ -16,3 +16,4 @@ config.ini
 *.pem
 .venv/
 myenv/
+venv/
