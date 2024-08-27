@@ -8,6 +8,7 @@ cd /home/emmitt/projects/autoshorts || exit
 echo "activating venv"
 source venv/bin/activate
 
+echo "checking for active selenium container"
 docker stop selenium || true
 docker rm -f selenium || true
 
