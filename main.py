@@ -5,7 +5,7 @@ from os import listdir
 from os.path import isfile, join
 import sys
 
-def createVideo(upload):
+def createVideo(upload = False, docker_compose = False):
     config = configparser.ConfigParser()
     config.read('config.ini')
     outputDir = config["General"]["OutputDirectory"]
@@ -18,7 +18,7 @@ def createVideo(upload):
     fileName = script.getFileName()
 
     # Create screenshots
-    screenshot.getPostScreenshots(fileName, script, postId, read_comments)
+    screenshot.getPostScreenshots(fileName, script, postId, read_comments, docker_compose)
 
 
     # Setup background clip
@@ -144,12 +144,13 @@ def upload_video(file, title, description, keywords, category, privacy_status):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument('-upload', action='store_true')
+    parser.add_argument('--upload', action='store_true')
+    parser.add_argument('--docker-compose', action='store_true')
     args = parser.parse_args()
 
     for i in range(3):
         try:
-            createVideo(upload=args.upload)
+            createVideo(upload=args.upload, docker_compose=args.docker_compose)
             break
         except Exception as e:
             print(e, "\nSomething went wrong. Retrying in 5 seconds...")
