@@ -1,7 +1,5 @@
 from selenium import webdriver
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.common.exceptions import NoSuchElementException
 from PIL import Image
 import time, re
 
@@ -9,9 +7,9 @@ screenshotDir = "Screenshots"
 screenWidth = 768
 screenHeight = 2000
 
-def getPostScreenshots(filePrefix, script, postId, read_comments):
+def getPostScreenshots(filePrefix, script, postId, read_comments, docker_compose = False):
     print("Taking screenshots...")
-    driver = __setupDriver(script.url)
+    driver = __setupDriver(script.url, docker_compose)
     print("Driver setup complete")
     driver.switch_to.window(driver.window_handles[0])
     # close_popup(driver)
@@ -116,13 +114,14 @@ def close_popup(driver):
             time.sleep(5)
             print("Couldn't find any popup")
 
-def __setupDriver(url: str):
+def __setupDriver(url: str, docker_compose):
     options = webdriver.FirefoxOptions()
     options.add_argument("--headless")
 
-    # driver = webdriver.Firefox(options=options)
-    # driver = webdriver.Remote(command_executor='http://localhost:4444/wd/hub', options=options)
-    driver = webdriver.Remote(command_executor='http://firefox:4444/wd/hub', options=options)
+    if docker_compose:
+        driver = webdriver.Remote(command_executor='http://firefox:4444/wd/hub', options=options)
+    else:
+        driver = webdriver.Remote(command_executor='http://localhost:4444/wd/hub', options=options)
 
     driver.set_window_size(width=screenWidth, height=screenHeight)
     driver.get(url)
