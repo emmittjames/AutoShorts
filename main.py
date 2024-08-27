@@ -149,7 +149,6 @@ if __name__ == "__main__":
 
     for i in range(3):
         try:
-            raise ValueError("testing error")
             createVideo(upload=args.upload)
             break
         except Exception as e:
