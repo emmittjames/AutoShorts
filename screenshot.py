@@ -118,7 +118,6 @@ def __setupDriver(url: str, docker_compose):
     options = webdriver.FirefoxOptions()
     options.add_argument("--headless")
 
-    driver
     if docker_compose:
         driver = webdriver.Remote(command_executor='http://firefox:4444/wd/hub', options=options)
     else:
