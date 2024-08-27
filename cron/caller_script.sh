@@ -1,7 +1,7 @@
 #!/bin/bash
 
 call_script() {
-    bash "/home/emmitt/projects/autoshorts/cron/random_upload.sh"
+    bash "/home/emmitt/projects/autoshorts/cron/generate_and_upload.sh"
     return $?
 }
 
