@@ -2,8 +2,11 @@
 
 set -e
 
-echo "navigating to directory"
-cd /home/emmitt/projects/autoshorts || exit
+CURR_DIR="$(dirname "$(realpath "$0")")"
+PROJECT_DIR="$(realpath "$CURR_DIR/..")"
+
+echo "navigating to directory $PROJECT_DIR"
+cd "$PROJECT_DIR" || exit
 
 echo "activating venv"
 source venv/bin/activate

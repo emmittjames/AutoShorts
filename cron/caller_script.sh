@@ -1,7 +1,9 @@
 #!/bin/bash
 
+CURR_DIR="$(dirname "$(realpath "$0")")"
+
 call_script() {
-    bash "/home/emmitt/projects/autoshorts/cron/generate_and_upload.sh"
+    bash "$CURR_DIR/generate_and_upload.sh"
     return $?
 }
 
@@ -22,11 +24,11 @@ while [ $attempts -lt $max_attempts ]; do
         echo "script executed successfully"
         break
     else
-        echo "script failed. retrying in 2 minutes..."
+        echo "script failed. retrying in 1 minute..."
 	attempts=$((attempts + 1))
     fi
 
-    sleep 120
+    sleep 60
 done
 
 if [ $attempts -eq $max_attempts ]; then
