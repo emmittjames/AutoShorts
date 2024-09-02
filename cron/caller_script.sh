@@ -7,11 +7,11 @@ call_script() {
     return $?
 }
 
-echo "caller_script started, current time is: $(date +"%H:%M:%S")"
+echo "caller_script started, current time is: $(date)"
 RANDOM_DELAY=$((RANDOM % 18000))
 echo "sleeping for $RANDOM_DELAY"
 sleep $RANDOM_DELAY
-echo "done sleeping, current time is: $(date +"%H:%M:%S")"
+echo "done sleeping, current time is: $(date)"
 
 attempts=0
 max_attempts=3
