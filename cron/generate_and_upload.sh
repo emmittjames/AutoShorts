@@ -5,6 +5,21 @@ set -e
 CURR_DIR="$(dirname "$(realpath "$0")")"
 PROJECT_DIR="$(realpath "$CURR_DIR/..")"
 
+cleanup() {
+    echo "stopping selenium container"
+    docker stop selenium
+
+    echo "removing selenium container"
+    docker rm -f selenium
+
+    echo "deactivating venv"
+    deactivate
+
+    echo "all done :)"
+}
+
+trap cleanup EXIT
+
 echo "navigating to directory $PROJECT_DIR"
 cd "$PROJECT_DIR" || exit
 
@@ -20,14 +35,3 @@ docker run -d -p 4444:4444 -p 7900:7900 --shm-size="2g" --name selenium selenium
 
 echo "running main.py"
 python main.py --upload
-
-echo "stopping selenium container"
-docker stop selenium
-
-echo "removing selenium container"
-docker rm -f selenium
-
-echo "deactivating venv"
-deactivate
-
-echo "all done :)"
