@@ -34,4 +34,4 @@ echo "starting selenium container"
 docker run -d -p 4444:4444 -p 7900:7900 --shm-size="2g" --name selenium selenium/standalone-firefox:latest
 
 echo "running main.py"
-python main.py --upload
+python3 main.py --upload
