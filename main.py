@@ -22,7 +22,7 @@ def createVideo(upload = False, docker_compose = False):
 
 
     # Setup background clip
-    bgDir = config["General"]["BackgroundDirectory"]
+    bgDir = config["General"]["BackgroundVideoDirectory"]
     bgPrefix = config["General"]["BackgroundFilePrefix"]
     bgFiles = [f for f in listdir(bgDir) if isfile(join(bgDir, f)) and f.lower().endswith('.mp4')]
     bgCount = len(bgFiles)
@@ -55,6 +55,19 @@ def createVideo(upload = False, docker_compose = False):
         videoClip = imageClip.set_audio(audioClip)
         videoClip.fps = 1
         return videoClip
+    
+    def __addBackgroundMusic(existingClip):
+        music_dir= config["General"]["BackgroundMusicDirectory"]
+        mp3_files = [f for f in os.listdir(music_dir) if f.endswith('.mp3')]
+        random_file = random.choice(mp3_files)
+        backgroundMusic = AudioFileClip(os.path.join(music_dir, random_file))
+        max_start_time = max(0, backgroundMusic.duration - existingClip.duration)
+        random_start_time = random.uniform(0, max_start_time)
+        backgroundMusic = backgroundMusic.subclip(random_start_time, random_start_time+existingClip.duration)
+        backgroundMusic = backgroundMusic.volumex(0.01)
+        combinedAudio = CompositeAudioClip([existingClip.audio, backgroundMusic])
+        existingClip = existingClip.set_audio(combinedAudio)
+        return existingClip
 
     # Create video clips
     print("Editing clips together...")
@@ -73,7 +86,7 @@ def createVideo(upload = False, docker_compose = False):
 
     # Merge clips into single track
     contentOverlay = concatenate_videoclips(clips).set_position(("center", "center"))
-
+    contentOverlay = __addBackgroundMusic(contentOverlay)
 
     # Compose background/foreground
     final = CompositeVideoClip(
