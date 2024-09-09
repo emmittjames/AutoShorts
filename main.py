@@ -127,7 +127,13 @@ def createVideo(upload = False, docker_compose = False):
     print("Video is ready to upload!")
     print(f"Title: {script.title}  File: {outputFile}")
 
-    description = "Engaging posts originating from all around Reddit! Make sure to check out my channel and subscribe for more awesome Reddit clips."
+    description = (
+        "Engaging posts originating from all around Reddit! Make sure to check out my channel and subscribe for more awesome Reddit clips.\n\n"
+        "Music:\n"
+        "LEMMiNO - Cipher\n"
+        "https://www.youtube.com/watch?v=b0q5PR1xpA0\n"
+        "CC BY-SA 4.0"
+    )
     keywords = "reddit, redditpost, redditstories, redditstory, askreddit, aita, tifu"
     category = "24"
     privacy_status = "public"
