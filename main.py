@@ -61,13 +61,15 @@ def createVideo(upload = False, docker_compose = False):
         mp3_files = [f for f in os.listdir(music_dir) if f.endswith('.mp3')]
         random_file = random.choice(mp3_files)
         backgroundMusic = AudioFileClip(os.path.join(music_dir, random_file))
+
         max_start_time = max(0, backgroundMusic.duration - existingClip.duration)
         random_start_time = random.uniform(0, max_start_time)
         backgroundMusic = backgroundMusic.subclip(random_start_time, random_start_time+existingClip.duration)
-        backgroundMusic = backgroundMusic.volumex(0.01)
+        backgroundMusic = backgroundMusic.volumex(0.03)
+
         combinedAudio = CompositeAudioClip([existingClip.audio, backgroundMusic])
-        existingClip = existingClip.set_audio(combinedAudio)
-        return existingClip
+        newClip = existingClip.set_audio(combinedAudio)
+        return newClip
 
     # Create video clips
     print("Editing clips together...")
