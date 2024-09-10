@@ -59,6 +59,8 @@ def createVideo(upload = False, docker_compose = False):
     def __addBackgroundMusic(existingClip):
         music_dir= config["General"]["BackgroundMusicDirectory"]
         mp3_files = [f for f in os.listdir(music_dir) if f.endswith('.mp3')]
+        if not mp3_files:
+            return existingClip
         random_file = random.choice(mp3_files)
         backgroundMusic = AudioFileClip(os.path.join(music_dir, random_file))
 
