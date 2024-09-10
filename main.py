@@ -22,7 +22,7 @@ def createVideo(upload = False, docker_compose = False):
 
 
     # Setup background clip
-    bgDir = config["General"]["BackgroundDirectory"]
+    bgDir = config["General"]["BackgroundVideoDirectory"]
     bgPrefix = config["General"]["BackgroundFilePrefix"]
     bgFiles = [f for f in listdir(bgDir) if isfile(join(bgDir, f)) and f.lower().endswith('.mp4')]
     bgCount = len(bgFiles)
@@ -55,6 +55,22 @@ def createVideo(upload = False, docker_compose = False):
         videoClip = imageClip.set_audio(audioClip)
         videoClip.fps = 1
         return videoClip
+    
+    def __addBackgroundMusic(existingClip):
+        music_dir= config["General"]["BackgroundMusicDirectory"]
+        mp3_files = [f for f in os.listdir(music_dir) if f.endswith('.mp3')]
+        if not mp3_files:
+            return existingClip
+        random_file = random.choice(mp3_files)
+        backgroundMusic = AudioFileClip(os.path.join(music_dir, random_file))
+
+        start_time = random.uniform(0, 15)
+        backgroundMusic = backgroundMusic.subclip(start_time, start_time+existingClip.duration+2)
+        backgroundMusic = backgroundMusic.volumex(0.05)
+
+        combinedAudio = CompositeAudioClip([existingClip.audio, backgroundMusic])
+        newClip = existingClip.set_audio(combinedAudio)
+        return newClip
 
     # Create video clips
     print("Editing clips together...")
@@ -73,7 +89,7 @@ def createVideo(upload = False, docker_compose = False):
 
     # Merge clips into single track
     contentOverlay = concatenate_videoclips(clips).set_position(("center", "center"))
-
+    contentOverlay = __addBackgroundMusic(contentOverlay)
 
     # Compose background/foreground
     final = CompositeVideoClip(
@@ -113,7 +129,13 @@ def createVideo(upload = False, docker_compose = False):
     print("Video is ready to upload!")
     print(f"Title: {script.title}  File: {outputFile}")
 
-    description = "Engaging posts originating from all around Reddit! Make sure to check out my channel and subscribe for more awesome Reddit clips."
+    description = (
+        "Engaging posts originating from all around Reddit! Make sure to check out my channel and subscribe for more awesome Reddit clips.\n\n"
+        "Music:\n"
+        "LEMMiNO - Cipher\n"
+        "https://www.youtube.com/watch?v=b0q5PR1xpA0\n"
+        "CC BY-SA 4.0"
+    )
     keywords = "reddit, redditpost, redditstories, redditstory, askreddit, aita, tifu"
     category = "24"
     privacy_status = "public"

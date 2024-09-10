@@ -1,1 +1,1 @@
-0 19 * * * /home/emmitt/projects/autoshorts/cron/callerscript.sh > /home/emmitt/projects/autoshorts/cron/cronlog.log 2>$1
+0 17 * * * /home/emmitt/projects/autoshorts/cron/callerscript.sh > /home/emmitt/projects/autoshorts/cron/cronlog.log 2>$1
