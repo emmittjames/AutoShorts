@@ -6,6 +6,7 @@ import markdown_to_text
 import time
 from videoscript import VideoScript
 import configparser
+import json
 
 config = configparser.ConfigParser()
 config.read('config.ini')
@@ -13,53 +14,84 @@ CLIENT_ID = config["Reddit"]["CLIENT_ID"]
 CLIENT_SECRET = config["Reddit"]["CLIENT_SECRET"]
 USER_AGENT = config["Reddit"]["USER_AGENT"]
 
+RECENT_SELECTIONS_FILE = 'recent_selections.json'
+def is_recent_selection(video_title):
+    recent_selections = load_recent_selections()
+    return video_title in recent_selections
+
+def load_recent_selections():
+    print("Loading recent selections")
+    if os.path.exists(RECENT_SELECTIONS_FILE):
+        print("exists")
+        with open(RECENT_SELECTIONS_FILE, 'r') as file:
+            data = json.load(file)
+            return data.get('recent_selections', [])
+    return []
+
+def save_recent_selections(recent_selections):
+    with open(RECENT_SELECTIONS_FILE, 'w') as file:
+        json.dump({"recent_selections": recent_selections}, file)
+
+def add_to_recent_selections(video_title):
+    recent_selections = load_recent_selections()
+    recent_selections.append(video_title)
+    if len(recent_selections) > 3:
+        recent_selections = recent_selections[-3:]
+    save_recent_selections(recent_selections)
+
 def getContent(outputDir, postOptionCount) -> VideoScript:
     reddit = __getReddit()
     existingPostIds = __getExistingPostIds(outputDir)
 
-    now = int(time.time())
-    posts = []
-
-    read_comments = True
-    subreddit_mapping = {
-        0: "askreddit",
-        1: "amitheasshole",
-        2: "tifu",
-        3: "offmychest",
-    }
-    for key, value in subreddit_mapping.items():
-        print(f"[{key}] {value}")
-    tries = 0
     while True:
-        population = [0, 1, 2, 3]
-        weights = [0.4, 0.2, 0.2, 0.2]
-        random_number = random.choices(population, weights)[0]
-        SUBREDDIT = subreddit_mapping[random_number]
-        number_of_posts = len(list(reddit.subreddit(SUBREDDIT).top(time_filter="day", limit=postOptionCount*3)))
-        if tries>10 or number_of_posts >= 1:
-            break
-        tries += 1
+        now = int(time.time())
+        posts = []
 
+        read_comments = True
+        subreddit_mapping = {
+            0: "askreddit",
+            1: "amitheasshole",
+            2: "tifu",
+            3: "offmychest",
+        }
+        for key, value in subreddit_mapping.items():
+            print(f"[{key}] {value}")
+        tries = 0
+        while True:
+            population = [0, 1, 2, 3]
+            weights = [0.4, 0.2, 0.2, 0.2]
+            random_number = random.choices(population, weights)[0]
+            SUBREDDIT = subreddit_mapping[random_number]
+            number_of_posts = len(list(reddit.subreddit(SUBREDDIT).top(time_filter="day", limit=postOptionCount*3)))
+            if tries>10 or number_of_posts >= 1:
+                break
+            tries += 1
 
-    if SUBREDDIT == "amitheasshole" or SUBREDDIT == "offmychest" or SUBREDDIT == "tifu":
-        read_comments = False
+        if SUBREDDIT == "amitheasshole" or SUBREDDIT == "offmychest" or SUBREDDIT == "tifu":
+            read_comments = False
 
-    for submission in reddit.subreddit(SUBREDDIT).top(time_filter="day", limit=postOptionCount*3):
-        if (f"{submission.id}.mp4" in existingPostIds or submission.over_18):
+        for submission in reddit.subreddit(SUBREDDIT).top(time_filter="day", limit=postOptionCount*3):
+            if (f"{submission.id}.mp4" in existingPostIds or submission.over_18):
+                continue
+            hoursAgoPosted = (now - submission.created_utc) / 3600
+            paragraph_count = submission.selftext.count('\n') + 1
+            word_count = len(submission.selftext.split())
+            word_to_paragraph_ratio = word_count / paragraph_count
+            if (word_count > 240 or word_to_paragraph_ratio>70 or word_count < 100) and SUBREDDIT != "askreddit":
+                continue
+            print(f"[{len(posts)}] {submission.title} | Word Count: {word_count} | Paragraph Count: {paragraph_count} | Upvotes: {submission.score} | {'{:.1f}'.format(hoursAgoPosted)} hours ago")
+            posts.append(submission)
+            if (len(posts) >= postOptionCount):
+                break
+
+        postSelection = random.randint(0, len(posts)-1)
+        selectedPost = posts[postSelection]
+        if is_recent_selection(selectedPost.title):
             continue
-        hoursAgoPosted = (now - submission.created_utc) / 3600
-        paragraph_count = submission.selftext.count('\n') + 1
-        word_count = len(submission.selftext.split())
-        word_to_paragraph_ratio = word_count / paragraph_count
-        if (word_count > 240 or word_to_paragraph_ratio>70 or word_count < 100) and SUBREDDIT != "askreddit":
-            continue
-        print(f"[{len(posts)}] {submission.title} | Word Count: {word_count} | Paragraph Count: {paragraph_count} | Upvotes: {submission.score} | {'{:.1f}'.format(hoursAgoPosted)} hours ago")
-        posts.append(submission)
-        if (len(posts) >= postOptionCount):
-            break
+        break
+    
+    add_to_recent_selections(selectedPost)
 
-    postSelection = random.randint(0, len(posts)-1)
-    selectedPost = posts[postSelection]
     return __getContentFromPost(selectedPost, read_comments), selectedPost.id, read_comments
 
 def __getReddit():
