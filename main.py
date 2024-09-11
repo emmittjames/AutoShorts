@@ -66,7 +66,7 @@ def createVideo(upload = False, docker_compose = False):
 
         start_time = random.uniform(0, 15)
         backgroundMusic = backgroundMusic.subclip(start_time, start_time+existingClip.duration+2)
-        backgroundMusic = backgroundMusic.volumex(0.05)
+        backgroundMusic = backgroundMusic.volumex(0.1)
 
         combinedAudio = CompositeAudioClip([existingClip.audio, backgroundMusic])
         newClip = existingClip.set_audio(combinedAudio)
