@@ -16,7 +16,7 @@ def createVideo(upload = False, docker_compose = False):
     script, postId, read_comments = reddit.getContent(outputDir, postOptionCount)
 
     fileName = script.getFileName()
-
+    
     # Create screenshots
     screenshot.getPostScreenshots(fileName, script, postId, read_comments, docker_compose)
 
