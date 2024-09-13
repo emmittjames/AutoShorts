@@ -15,8 +15,6 @@ def createVideo(upload = False, docker_compose = False):
     postOptionCount = int(config["Reddit"]["NumberOfPostsToSelectFrom"])
     script, postId, read_comments = reddit.getContent(outputDir, postOptionCount)
 
-    print("file name:", fileName)
-
     # Create screenshots
     screenshot.getPostScreenshots(fileName, script, postId, read_comments, docker_compose)
 

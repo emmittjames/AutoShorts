@@ -16,14 +16,13 @@ USER_AGENT = config["Reddit"]["USER_AGENT"]
 
 RECENT_SELECTIONS_FILE = 'recent_selections.json'
 def is_recent_selection(video_title):
-    print("is_recent_selection")
+    print("is_recent_selection", video_title)
     recent_selections = load_recent_selections()
     return video_title in recent_selections
 
 def load_recent_selections():
     print("Loading recent selections")
     if os.path.exists(RECENT_SELECTIONS_FILE):
-        print("exists")
         with open(RECENT_SELECTIONS_FILE, 'r') as file:
             data = json.load(file)
             print("return 1")
@@ -32,16 +31,16 @@ def load_recent_selections():
     return []
 
 def save_recent_selections(recent_selections):
-    selection_ids = []
-    for selection in recent_selections:
-        selection_ids.append(selection.id)
+    print("Saving recent selections", recent_selections)
     with open(RECENT_SELECTIONS_FILE, 'w') as file:
-        json.dump({"recent_selections": selection_ids}, file)
+        json.dump({"recent_selections": recent_selections}, file)
 
 def add_to_recent_selections(video_title):
     print("Adding to recent selections")
     recent_selections = load_recent_selections()
-    recent_selections.append(video_title)
+    print("zzzz", video_title, recent_selections)
+    recent_selections.append(video_title.id)
+    print("zxszfgf", recent_selections)
     if len(recent_selections) > 3:
         recent_selections = recent_selections[-3:]
     save_recent_selections(recent_selections)
