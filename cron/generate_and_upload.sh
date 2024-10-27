@@ -24,7 +24,7 @@ echo "navigating to directory $PROJECT_DIR"
 cd "$PROJECT_DIR" || exit
 
 echo "activating venv"
-source venv/bin/activate
+source .venv/bin/activate
 
 echo "checking for active selenium container"
 docker stop selenium || true
