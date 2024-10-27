@@ -32,15 +32,25 @@ main() {
 }
 
 echo "caller_script started, current time is: $(date)"
-RANDOM_DELAY=$((RANDOM % 10800))
-echo "first sleep, sleeping for $RANDOM_DELAY"
-sleep $RANDOM_DELAY
-echo "done sleeping, current time is: $(date)"
-main
-echo "first run finished, current time is: $(date)"
-RANDOM_DELAY=$(((RANDOM % 10800) + 3600))
-echo "second sleep, sleeping for $RANDOM_DELAY"
-sleep $RANDOM_DELAY
-echo "done sleeping, current time is: $(date)"
-main
+
+RANDOM_CHOICE=$((RANDOM % 100 + 1))
+if [ $RANDOM_CHOICE -le 45 ]; then
+    RUN_COUNT=2  # 45% chance
+elif [ $RANDOM_CHOICE -le 95 ]; then
+    RUN_COUNT=1  # 50% chance
+else
+    RUN_COUNT=0  # 5% chance
+fi
+
+echo "Determined RUN_COUNT for today: $RUN_COUNT"
+
+for (( i=0; i<RUN_COUNT; i++ )); do
+    RANDOM_DELAY=$((RANDOM % 10800))
+    echo "sleeping for $RANDOM_DELAY seconds before run #$((i + 1))"
+    sleep $RANDOM_DELAY
+    echo "done sleeping, current time is: $(date)"
+    main
+    echo "run #$((i + 1)) finished, current time is: $(date)"
+done
+
 echo "all done :D, current time is: $(date)"
