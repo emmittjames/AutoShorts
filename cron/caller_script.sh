@@ -34,12 +34,12 @@ main() {
 echo "caller_script started, current time is: $(date)"
 
 RANDOM_CHOICE=$((RANDOM % 100 + 1))
-if [ $RANDOM_CHOICE -le 45 ]; then
-    RUN_COUNT=2  # 45% chance
-elif [ $RANDOM_CHOICE -le 95 ]; then
-    RUN_COUNT=1  # 50% chance
+if [ $RANDOM_CHOICE -le 1 ]; then
+    RUN_COUNT=2  # 1% chance
+elif [ $RANDOM_CHOICE -le 98 ]; then
+    RUN_COUNT=1  # 97% chance
 else
-    RUN_COUNT=0  # 5% chance
+    RUN_COUNT=0  # 2% chance
 fi
 
 echo "Determined RUN_COUNT for today: $RUN_COUNT"
