@@ -18,7 +18,7 @@ Project created with:
 * [YouTube Data API](https://developers.google.com/youtube/v3) - Uploading
 
 Project hosted with: 
-* Raspberry Pi 5 - Runs Docker container of AutoShorts 2 times a day signaled by a cron job
+* Raspberry Pi 5 - Runs Docker container of AutoShorts 0-2 times a day signaled by a cron job (still experimenting with optimal upload schedule)
 
 ## Getting Started
 Start Selenium Grid container: `docker run -d -p 4444:4444 -p 7900:7900 --shm-size="2g" --name selenium selenium/standalone-firefox:latest`
