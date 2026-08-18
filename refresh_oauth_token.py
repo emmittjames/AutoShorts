@@ -1,17 +1,29 @@
 import json
+import os
+from datetime import datetime
+
 from google.oauth2.credentials import Credentials
 from google.auth.transport.requests import Request
-from datetime import datetime, timezone
 
-json_file_path = 'upload_video.py-oauth2.json'
+json_file_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'upload_video.py-oauth2.json')
+
+if not os.path.exists(json_file_path):
+    print(f'No OAuth token cache found at {json_file_path}; skipping refresh.')
+    raise SystemExit(0)
 
 with open(json_file_path, 'r') as file:
     credentials_data = json.load(file)
 
-if 'token_expiry' in credentials_data:
-    credentials_data['token_expiry'] = datetime.fromisoformat(
-        credentials_data['token_expiry'].replace('Z', '+00:00')
-    ).replace(tzinfo=None)
+token_expiry = credentials_data.get('token_expiry')
+if token_expiry:
+    try:
+        credentials_data['token_expiry'] = datetime.fromisoformat(
+            token_expiry.replace('Z', '+00:00')
+        )
+    except ValueError:
+        credentials_data['token_expiry'] = None
+else:
+    credentials_data['token_expiry'] = None
 
 creds = Credentials(
     token=credentials_data['access_token'],
@@ -23,18 +35,10 @@ creds = Credentials(
     expiry=credentials_data.get('token_expiry')
 )
 
-print(f"Token expiry: {creds.expiry} (naive datetime)")
-print(f"Current time: {datetime.now()} (naive datetime)")
-
 if creds.expired and creds.refresh_token:
-    print("Token is expired, refreshing...")
     creds.refresh(Request())
-    print("Access token refreshed.")
-
     credentials_data['access_token'] = creds.token
     credentials_data['token_expiry'] = creds.expiry.isoformat() if creds.expiry else None
 
     with open(json_file_path, 'w') as file:
         json.dump(credentials_data, file, indent=4)
-else:
-    print("Access token is still valid.")
