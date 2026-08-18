@@ -1,9 +1,10 @@
 import argparse
-from moviepy.editor import *
+from moviepy.editor import VideoFileClip, ImageClip, AudioFileClip, CompositeAudioClip, CompositeVideoClip, concatenate_videoclips, vfx
 import reddit, screenshot, time, subprocess, random, configparser, math
 from os import listdir
 from os.path import isfile, join
 import sys
+import os
 
 def createVideo(upload = False, docker_compose = False):
     config = configparser.ConfigParser()
@@ -146,8 +147,10 @@ def createVideo(upload = False, docker_compose = False):
         upload_video(outputFile, fileName, description, keywords, category, privacy_status)
 
 def upload_video(file, title, description, keywords, category, privacy_status):
+    print("Refreshing OAuth token...")
     subprocess.run(['python3', 'refresh_oauth_token.py'])
 
+    print("Uploading video...", file, title, description, keywords, category, privacy_status)
     upload_command = [
         "python3", "upload_video.py",
         "--file", file,
@@ -157,7 +160,6 @@ def upload_video(file, title, description, keywords, category, privacy_status):
         "--category", category,
         "--privacyStatus", privacy_status
     ]
-
     result = subprocess.run(upload_command, capture_output=True, text=True)
 
     print(result.stdout)
