@@ -1,17 +1,20 @@
 #!/usr/bin/python
 
-import httplib2
+import json
 import os
 import random
-import sys
 import time
+from datetime import datetime, timedelta
 
+import httplib2
+import requests
 from apiclient.discovery import build
 from apiclient.errors import HttpError
 from apiclient.http import MediaFileUpload
-from oauth2client.client import flow_from_clientsecrets
-from oauth2client.file import Storage
-from oauth2client.tools import argparser, run_flow
+from google.auth.exceptions import RefreshError
+from google.auth.transport.requests import Request
+from google.oauth2.credentials import Credentials
+from oauth2client.tools import argparser
 
 
 # Explicitly tell the underlying HTTP transport library not to retry, since
@@ -39,6 +42,8 @@ RETRIABLE_STATUS_CODES = [500, 502, 503, 504]
 # For more information about the client_secrets.json file format, see:
 #   https://developers.google.com/api-client-library/python/guide/aaa_client_secrets
 CLIENT_SECRETS_FILE = "client_secrets.json"
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+TOKEN_FILE = os.path.join(BASE_DIR, "upload_video.py-oauth2.json")
 
 # This OAuth 2.0 access scope allows an application to upload files to the
 # authenticated user's YouTube channel, but doesn't allow other types of access.
@@ -67,19 +72,128 @@ https://developers.google.com/api-client-library/python/guide/aaa_client_secrets
 VALID_PRIVACY_STATUSES = ("public", "private", "unlisted")
 
 
+def load_client_config():
+    try:
+        with open(CLIENT_SECRETS_FILE, 'r') as f:
+            data = json.load(f)
+    except FileNotFoundError:
+        raise SystemExit(MISSING_CLIENT_SECRETS_MESSAGE)
+
+    client_info = data.get('installed')
+    if not client_info:
+        raise SystemExit("client_secrets.json must contain an installed OAuth client config for device-code auth.")
+
+    return client_info['client_id'], client_info['client_secret']
+
+
+def save_token_file(token_data):
+    with open(TOKEN_FILE, 'w') as f:
+        json.dump(token_data, f, indent=4)
+
+
+def build_credentials_from_data(data):
+    token_expiry = data.get('token_expiry')
+    expiry = None
+    if token_expiry:
+        try:
+            token_expiry = token_expiry.replace('Z', '+00:00')
+            expiry = datetime.fromisoformat(token_expiry)
+        except Exception:
+            expiry = None
+
+    return Credentials(
+        token=data.get('access_token'),
+        refresh_token=data.get('refresh_token'),
+        token_uri=data.get('token_uri'),
+        client_id=data.get('client_id'),
+        client_secret=data.get('client_secret'),
+        scopes=data.get('scopes'),
+        expiry=expiry,
+    )
+
+
+def get_device_code_credentials():
+    client_id, client_secret = load_client_config()
+    response = requests.post(
+        'https://oauth2.googleapis.com/device/code',
+        data={'client_id': client_id, 'scope': YOUTUBE_UPLOAD_SCOPE},
+        timeout=30,
+    )
+    response.raise_for_status()
+    payload = response.json()
+
+    verification_url = payload.get('verification_url', 'https://www.google.com/device')
+    user_code = payload.get('user_code')
+    device_code = payload.get('device_code')
+    interval = int(payload.get('interval', 5))
+    expires_in = int(payload.get('expires_in', 1800))
+
+    print("Open this URL on another device:")
+    print(verification_url)
+    print(f"Enter this code: {user_code}")
+
+    deadline = time.time() + expires_in
+    poll_interval = interval
+
+    while time.time() < deadline:
+        time.sleep(poll_interval)
+        token_response = requests.post(
+            'https://oauth2.googleapis.com/token',
+            data={
+                'client_id': client_id,
+                'client_secret': client_secret,
+                'device_code': device_code,
+                'grant_type': 'urn:ietf:params:oauth:grant-type:device_code',
+            },
+            timeout=30,
+        )
+        token_payload = token_response.json()
+
+        error = token_payload.get('error')
+        if 'access_token' in token_payload:
+            token_payload['token_uri'] = 'https://oauth2.googleapis.com/token'
+            token_payload['client_id'] = client_id
+            token_payload['client_secret'] = client_secret
+            token_payload['scopes'] = [YOUTUBE_UPLOAD_SCOPE]
+            token_payload['token_expiry'] = (
+                datetime.now() + timedelta(seconds=int(token_payload.get('expires_in', 3600)))
+            ).isoformat()
+            save_token_file(token_payload)
+            return build_credentials_from_data(token_payload)
+
+        if error == 'authorization_pending':
+            continue
+        if error == 'slow_down':
+            poll_interval += 5
+            continue
+        if error == 'access_denied':
+            raise SystemExit('The user denied access to the Google account.')
+
+        raise SystemExit(f"Google device auth failed: {token_payload}")
+
+    raise SystemExit('Google device auth timed out before the user completed verification.')
+
+
 def get_authenticated_service(args):
-    flow = flow_from_clientsecrets(CLIENT_SECRETS_FILE,
-                                scope=YOUTUBE_UPLOAD_SCOPE,
-                                message=MISSING_CLIENT_SECRETS_MESSAGE)
+    if os.path.exists(TOKEN_FILE):
+        try:
+            with open(TOKEN_FILE, 'r') as f:
+                data = json.load(f)
+            creds = build_credentials_from_data(data)
 
-    storage = Storage("%s-oauth2.json" % sys.argv[0])
-    credentials = storage.get()
+            if creds.expired and creds.refresh_token:
+                creds.refresh(Request())
+                data['access_token'] = creds.token
+                data['token_expiry'] = creds.expiry.isoformat() if creds.expiry else None
+                save_token_file(data)
+                return build(YOUTUBE_API_SERVICE_NAME, YOUTUBE_API_VERSION, credentials=creds)
 
-    if credentials is None or credentials.invalid:
-        credentials = run_flow(flow, storage, args)
+            if creds.valid:
+                return build(YOUTUBE_API_SERVICE_NAME, YOUTUBE_API_VERSION, credentials=creds)
+        except (RefreshError, ValueError, TypeError, OSError, json.JSONDecodeError):
+            pass
 
-    return build(YOUTUBE_API_SERVICE_NAME, YOUTUBE_API_VERSION,
-                http=credentials.authorize(httplib2.Http()))
+    return build(YOUTUBE_API_SERVICE_NAME, YOUTUBE_API_VERSION, credentials=get_device_code_credentials())
 
 
 def initialize_upload(youtube, options):
